@@ -1,6 +1,6 @@
 """
 pong
-author: tiago vieira
+author: tiago vieira , tiagovmvieira@hotmail.com
 """
 
 #imports
