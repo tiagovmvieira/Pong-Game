@@ -15,17 +15,22 @@ pygame.display.set_caption("Pong Game")
 
 FPS = 60
 
-LIGHTGRAY = (211, 211, 211)
-STATEGRAY = (112, 128, 144)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 PADDLE_WIDTH, PADDLE_HEIGHT = 20, 100
 BALL_RADIUS = 7
 
-SCORE_FONT = pygame.font.SysFont("lucidasans", 50)
+WELCOME_FONT = pygame.font.Font("PixelEmulator-xq08.ttf", 20)
+SCORE_FONT = pygame.font.Font("PixelEmulator-xq08.ttf", 50)
 WINNIN_SCORE = 10
 
+COLOR_SPD = 1
+COL_DIR = [-1, -1, -1]
+DEF_COLOR = [255, 255, 255]
+
 class Paddle:
-    COLOR = LIGHTGRAY
+    COLOR = WHITE
     VEL = 4
 
     def __init__(self, x, y, width, height):
@@ -48,7 +53,7 @@ class Paddle:
         self.y = self.original_y
 
 class Ball:
-    COLOR = LIGHTGRAY
+    COLOR = WHITE
     MAX_VEL = 5
 
     def __init__(self, x, y, radius):
@@ -71,12 +76,36 @@ class Ball:
         self.y_vel = 0
         self.x_vel *= -1
 
+def col_change(DEF_COLOR, COL_DIR):
+    for i in range (len(COL_DIR)):
+        DEF_COLOR[i] += COLOR_SPD * COL_DIR[i]
+        if DEF_COLOR[i] >= 255:
+            DEF_COLOR[i] = 0
+        elif DEF_COLOR[i] <= 0:
+            DEF_COLOR[i] = 255
+
+def draw_intro(WINDOW):
+    WINDOW.fill(BLACK)
+
+    welcome_text = WELCOME_FONT.render('Welcome to Pong!', 1, WHITE)
+    text_rect_welcome = welcome_text.get_rect()
+    text_rect_welcome.center = (WIDTH // 2 - welcome_text.get_width() // 2, (HEIGHT * 1 // 4 - welcome_text.get_height() // 2))
+
+    enter_text = WELCOME_FONT.render('Press ENTER to continue', 1, DEF_COLOR)
+    text_rect_enter = welcome_text.get_rect()
+    text_rect_enter.center = (WIDTH // 2 - enter_text.get_width() // 2, (HEIGHT * 3 // 4 - enter_text.get_height() // 2))
+
+    WINDOW.blit(welcome_text, text_rect_welcome.center)
+    WINDOW.blit(enter_text, text_rect_enter.center)
+
+    col_change(DEF_COLOR, COL_DIR)
+    pygame.display.update()
 
 def draw(WINDOW, paddles, ball, left_score, right_score):
-    WINDOW.fill(STATEGRAY)
+    WINDOW.fill(BLACK)
 
-    left_score_text = SCORE_FONT.render(f'{left_score}', 1, LIGHTGRAY)
-    right_score_text = SCORE_FONT.render(f'{right_score}', 1, LIGHTGRAY)
+    left_score_text = SCORE_FONT.render(f'{left_score}', 1, WHITE)
+    right_score_text = SCORE_FONT.render(f'{right_score}', 1, WHITE)
     WINDOW.blit(left_score_text, ((WIDTH // 4) - left_score_text.get_width() // 2, 20))
     WINDOW.blit(right_score_text, ((WIDTH // 4 + (WIDTH / 2) - right_score_text.get_width() // 2), 20))
 
@@ -86,7 +115,7 @@ def draw(WINDOW, paddles, ball, left_score, right_score):
     for i in range(10, HEIGHT, HEIGHT//20):
         if (i % 2) == 1: #odd i?
             continue
-        pygame.draw.rect(WINDOW, LIGHTGRAY, (WIDTH // 2 - 5, i, 10, HEIGHT//20))
+        pygame.draw.rect(WINDOW, WHITE, (WIDTH // 2 - 5, i, 10, HEIGHT//20))
 
     ball.draw(WINDOW)
     pygame.display.update() #manually update the display
@@ -97,7 +126,6 @@ def handle_collision_paddle_y_vel(ball, paddle):
     ball.y_vel = -1 * difference_y / (paddle.height / 2) * ball.MAX_VEL
 
     return ball.y_vel
-
 
 def handle_collision(ball, left_paddle, right_paddle):
     #collision with the field horizontal boundaries
@@ -134,8 +162,23 @@ def handle_paddle_movement(keys, left_paddle, right_paddle):
         right_paddle.move(up = False)
 
 def main():
-    run = True
+    intro = True
     clock = pygame.time.Clock()
+
+    while intro:
+        clock.tick(FPS * 4)
+        draw_intro(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                intro = False
+                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP_ENTER:
+                    intro = False
+                    break
+
+    run = True
 
     left_paddle = Paddle(10, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -145,6 +188,7 @@ def main():
     right_score = 0
     while run: #main event loop
         clock.tick(FPS)
+
         draw(WINDOW, [left_paddle, right_paddle], ball, left_score, right_score)
 
         for event in pygame.event.get():
@@ -178,7 +222,7 @@ def main():
             win_text = "Right Player Won!"
         
         if (won):
-            text = SCORE_FONT.render(f'{win_text}', 1, LIGHTGRAY)
+            text = SCORE_FONT.render(f'{win_text}', 1, WHITE)
             WINDOW.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
             pygame.display.update()
             pygame.time.delay(5000)
