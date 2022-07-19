@@ -19,9 +19,3 @@ class Paddle:
     def reset(self):
         self.x = self.original_x
         self.y = self.original_y
-
-paddle = Paddle(0, 0)
-print(paddle.height)
-print(paddle.width)
-print(paddle.vel)
-print(paddle.color)
