@@ -1,3 +1,4 @@
+import pygame
 import game_constants
 
 class Paddle:
@@ -9,6 +10,16 @@ class Paddle:
         self.height = height
         self.vel = vel
         self.color = color
+
+    def __repr__(self):
+        return 'Paddle(x: {}, y: {}, width: {}, height: {}, vel: {}, color: {})'.format(self.x, self.y,\
+            self.width, self.height, self.vel, self.color)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def draw(self, window: pygame.surface):
+        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
     def move(self, up: bool = True):
         if up:
