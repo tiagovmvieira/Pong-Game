@@ -29,7 +29,7 @@ def draw_intro(window: pygame.Surface, colors: Tuple[tuple, tuple], window_dims:
 
 
 def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], scores: Tuple[int, int], colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
-    window.fill(Tuple[0])
+    window.fill(colors[0])
 
     score_font = pygame.font.SysFont('arial', font_size)
 
@@ -49,3 +49,44 @@ def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], sco
     
     ball.draw(window)
     pygame.display.update()
+
+
+def handle_paddle_movement(keys: list, paddles: Tuple[Paddle, Paddle], window_height: int):
+    if keys[pygame.K_w] and paddles[0].y > 0: #checks if the window dimensions are not exceed
+        paddles[0].move(up = True)
+    elif keys[pygame.K_s] and paddles[0].y + paddles[0].height <= window_height:
+        paddles[0].move(up = False)
+    elif keys[pygame.K_UP] and paddles[1].y > 0:
+        paddles[1].move(up = True)
+    elif keys[pygame.K_DOWN] and paddles[1].y + paddles[1].height <= window_height:
+        paddles[1].move(up = False)
+
+
+def handle_collision_paddle_y_vel(ball: Ball, paddle: Paddle)-> int:
+    middle_y = paddle.y + paddle.height / 2
+    difference_y = middle_y - ball.y
+    ball.y_vel = -1 * difference_y / (paddle.height / 2) * ball.max_vel
+
+    return ball.y_vel
+
+
+def handle_collision(ball: Ball, paddles: Tuple[Paddle, Paddle], window_height: int):
+    # collision with the field horizontal boundaries
+    if (ball.y + ball.radius >= window_height): #down (y)
+        ball.y_vel *= -1
+    elif (ball.y - ball.radius <= 0): #up (y)
+        ball.y_vel *= -1
+
+    # paddle collision
+    if ball.x_vel < 0:
+        # going to collide to the left paddle
+        if ball.y >= paddles[0].y and ball.y <= paddles[0].y + paddles[0].height:
+            if ball.x - ball.radius <= paddles[0].x + paddles[0].width:
+                ball.x_vel *= -1
+                ball.y_vel = handle_collision_paddle_y_vel(ball, paddles[0])
+    else:
+        # going to collide to the right paddle
+        if ball.y >= paddles[1].y and ball.y <= paddles[1].y + paddles[1].height:
+            if ball.x + ball.radius >= paddles[1].x:
+                ball.x_vel *= -1
+                ball.y_vel = handle_collision_paddle_y_vel(ball, paddles[0])
