@@ -2,7 +2,7 @@
 import pygame
 import os
 
-from typing import Tuple
+from typing import Tuple, List
 from ball import Ball
 from paddle import Paddle
 
@@ -28,7 +28,7 @@ def draw_intro(window: pygame.Surface, colors: Tuple[tuple, tuple], window_dims:
     pygame.display.update()
 
 
-def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], scores: Tuple[int, int], colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
+def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], scores: list, colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
     window.fill(colors[0])
 
     score_font = pygame.font.SysFont('arial', font_size)
@@ -90,3 +90,29 @@ def handle_collision(ball: Ball, paddles: Tuple[Paddle, Paddle], window_height: 
             if ball.x + ball.radius >= paddles[1].x:
                 ball.x_vel *= -1
                 ball.y_vel = handle_collision_paddle_y_vel(ball, paddles[0])
+
+
+def score_handling(ball: Ball, scores: list, paddles: Tuple[Paddle, Paddle], window_width: int)-> list:
+    if ball.x > window_width:
+        scores[0] += 1
+        ball.reset()
+        paddles[0].reset
+        paddles[1].reset
+    elif ball.x < 0:
+        scores[1] += 1
+        ball.reset()
+        paddles[0].reset()
+        paddles[1].reset()
+    
+    return scores
+
+
+def winner_handling(scores, winning_score)-> tuple:
+    if scores[0] == winning_score:
+        won = True
+        win_text = 'Left Player Won!'
+    elif scores [1] == winning_score:
+        won = True
+        win_text = 'Right Player Won!'
+
+    return won, win_text
