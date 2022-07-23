@@ -22,5 +22,3 @@ def game_session(clock, fps: int, window: pygame.Surface, ball : Ball, paddles: 
 
 def closing_session(window: pygame.Surface, victory_text: str, colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
     draw_close(window, victory_text, colors, window_dims, font_size)
-
-
