@@ -9,6 +9,7 @@ def intro_session(clock, fps: int, window: pygame.Surface, colors: Tuple[tuple, 
     clock.tick(fps * 4)
     draw_intro(window, colors, window_dims, font_size)
 
+
 def game_session(clock, fps: int, window: pygame.Surface, ball : Ball, paddles: Tuple[Paddle, Paddle], scores: list,
                 colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int, keys: list):
     
@@ -19,10 +20,7 @@ def game_session(clock, fps: int, window: pygame.Surface, ball : Ball, paddles: 
     ball.move()
     handle_collision(ball, paddles, window_dims[1])
 
-
-
-
-
-
+def closing_session(window: pygame.Surface, victory_text: str, colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
+    draw_close(window, victory_text, colors, window_dims, font_size)
 
 
