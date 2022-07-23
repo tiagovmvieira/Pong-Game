@@ -1,4 +1,5 @@
 # imports
+from re import S
 import pygame
 import os
 
@@ -48,6 +49,27 @@ def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], sco
         pygame.draw.rect(window, colors[1], (window_dims[0] // 2 - 5, i, 10, window_dims[1] / 20))
     
     ball.draw(window)
+    pygame.display.update()
+
+
+def draw_close(window: pygame.Surface, victory_text: str, colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_size: int):
+    window.fill(colors[0])
+
+    close_font = pygame.font.SysFont('arial', font_size)
+    winner_message = close_font.render('{}'.format(victory_text), 1, colors[1])
+    text_rect_winner = winner_message.get_rect()
+    text_rect_winner.center = (window_dims[0] // 2 - winner_message.get_width() // 2,
+                              (window_dims[1] * 1 // 4 - winner_message.get_height() // 2)
+                              )
+
+    revenge_message = close_font.render('{}'.format('Do you want to play again? (Y/N)'), 1, colors[1])
+    text_rect_revenge = revenge_message.get_rect()
+    text_rect_revenge.center = (window_dims[0] // 2 - revenge_message.get_width() // 2,
+                              (window_dims[1] * 3 // 4 - revenge_message.get_height() // 2)
+                              )
+
+    window.blit(winner_message, text_rect_winner.center)
+    window.blit(revenge_message, text_rect_revenge.center)
     pygame.display.update()
 
 
@@ -107,12 +129,12 @@ def score_handling(ball: Ball, scores: list, paddles: Tuple[Paddle, Paddle], win
     return scores
 
 
-def winner_handling(scores, winning_score)-> tuple:
+def winner_handling(scores, victory, victory_text, winning_score)-> tuple:
     if scores[0] == winning_score:
-        won = True
-        win_text = 'Left Player Won!'
+        victory = True
+        victory_text = 'Left Player Won!'
     elif scores [1] == winning_score:
-        won = True
-        win_text = 'Right Player Won!'
+        victory = True
+        victory_text = 'Right Player Won!'
 
-    return won, win_text
+    return victory, victory_text
