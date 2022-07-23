@@ -44,23 +44,61 @@ def main():
     left_score = 0
     right_score = 0
     scores = [left_score, right_score]
-    while run:
-        won = False
-        keys = pygame.key.get_pressed()
-        game_session(clock, game_constants.FPS, window, ball, (left_paddle, right_paddle), scores,
-                    (game_constants.BLACK, game_constants.WHITE), (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT),
-                     game_constants.SCORE_FONT_SIZE, keys)
 
-        scores = score_handling(ball, scores, (left_paddle, right_paddle), game_constants.WINDOW_WIDTH)
+    game = True
+    run = True
+    victory = False
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+    while game:
+        left_score = 0
+        right_score = 0
+        scores = [left_score, right_score]
+
+        while run:
+            victory_text = ''
+            keys = pygame.key.get_pressed()
+            game_session(clock, game_constants.FPS, window, ball, (left_paddle, right_paddle), scores,
+                        (game_constants.BLACK, game_constants.WHITE), (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT),
+                        game_constants.SCORE_FONT_SIZE, keys
+                        )
+
+            scores = score_handling(ball, scores, (left_paddle, right_paddle), game_constants.WINDOW_WIDTH)
+
+            victory, victory_text = winner_handling(scores, victory, victory_text, game_constants.WINNING_SCORE)  
+            if victory:
                 run = False
                 break
 
-        winner_handling(scores, game_constants.WINNING_SCORE)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    break
+        
+        while victory:
+            closing_session(window, victory_text, (game_constants.BLACK, game_constants.WHITE),
+                           (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), game_constants.SCORE_FONT_SIZE
+                           )
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    victory = False
+                    game = False
+                    break
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        victory = False
+                        run = True 
+                        break
+                    elif event.key == pygame.K_n:
+                        victory = False
+                        game = False
+                        break
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+                break
 
 
 if __name__ == '__main__':
     main()
-
