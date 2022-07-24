@@ -6,17 +6,19 @@ from typing import Tuple, List
 from cls.ball import Ball
 from cls.paddle import Paddle
 
-def color_change(color_direction, defined_color, color_velocity):
-    for i in range(len(color_direction)):
-        defined_color[i] += color_velocity * color_direction[i]
-        if defined_color[i] >= 255:
-            defined_color[i] = 0
-        elif defined_color[i] <= 0:
-            defined_color[i] = 255
+def color_change(color_settings: list)-> list:
+    for i in range(len(color_settings[0])):
+        color_settings[1][i] += color_settings[2] * color_settings[0][i]
+        if color_settings[1][i] >= 255:
+            color_settings[1][i] = 0
+        elif color_settings[1][i] <= 0:
+            color_settings[1][i] = 255
+
+    return color_settings[1]
 
 
 def draw_intro(window: pygame.Surface, colors: Tuple[tuple, tuple], window_dims: Tuple[int, int], font_settings: Tuple[str, int],
-              color_settings: Tuple[list, int]):
+              color_settings: list):
     window.fill(colors[0])
 
     welcome_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
@@ -25,24 +27,24 @@ def draw_intro(window: pygame.Surface, colors: Tuple[tuple, tuple], window_dims:
     text_rect_welcome.center = (window_dims[0] // 2 - welcome_message.get_width() // 2,
                              (window_dims[1] * 1 // 4 - welcome_message.get_height() // 2))
 
-    enter_message = welcome_font.render('Press ENTER to continue', 1, colors[1])
+    enter_message = welcome_font.render('Press ENTER to continue', 1, color_settings[1])
     text_rect_enter = enter_message.get_rect()
     text_rect_enter.center = (window_dims[0] // 2 - enter_message.get_width() // 2,
                              (window_dims[1] * 3 // 4 - enter_message.get_height() // 2))
 
     window.blit(welcome_message, text_rect_welcome.center),
     window.blit(enter_message, text_rect_enter.center)
-    color_change(color_settings)
+    color_settings[1] = color_change(color_settings)
 
     pygame.display.update()
 
 
 def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], scores: List[int], colors: Tuple[tuple, tuple],
-        window_dims: Tuple[int, int], font_size: int, font_path: str):
+        window_dims: Tuple[int, int], font_settings: Tuple[str, int]):
 
     window.fill(colors[0])
 
-    score_font = pygame.font.Font(os.path.join(font_path, os.listdir(font_path)[0]), font_size)
+    score_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
 
     left_score_text = score_font.render('{}'.format(scores[0]), 1, colors[1])
     right_score_text = score_font.render('{}'.format(scores[1]), 1, colors[1])
@@ -63,18 +65,18 @@ def draw(window: pygame.Surface, ball: Ball, paddles: Tuple[Paddle, Paddle], sco
 
 
 def draw_close(window: pygame.Surface, victory_text: str, colors: Tuple[tuple, tuple],
-               window_dims: Tuple[int, int], font_size: int, font_path: str):
+               window_dims: Tuple[int, int], font_settings: Tuple[str, int], color_settings: list):
                
     window.fill(colors[0])
 
-    close_font = pygame.font.Font(os.path.join(font_path, os.listdir(font_path)[0]), font_size)
+    close_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
     winner_message = close_font.render('{}'.format(victory_text), 1, colors[1])
     text_rect_winner = winner_message.get_rect()
     text_rect_winner.center = (window_dims[0] // 2 - winner_message.get_width() // 2,
                               (window_dims[1] * 1 // 4 - winner_message.get_height() // 2)
                               )
 
-    revenge_message = close_font.render('{}'.format('Do you want to play again? (Y/N)'), 1, colors[1])
+    revenge_message = close_font.render('{}'.format('Do you want to play again? (Y/N)'), 1, color_settings[1])
     text_rect_revenge = revenge_message.get_rect()
     text_rect_revenge.center = (window_dims[0] // 2 - revenge_message.get_width() // 2,
                               (window_dims[1] * 3 // 4 - revenge_message.get_height() // 2)
@@ -82,6 +84,7 @@ def draw_close(window: pygame.Surface, victory_text: str, colors: Tuple[tuple, t
 
     window.blit(winner_message, text_rect_winner.center)
     window.blit(revenge_message, text_rect_revenge.center)
+    color_settings[1] = color_change(color_settings)
     pygame.display.update()
 
 
