@@ -5,7 +5,7 @@ import os
 from typing import Tuple, Optional, List
 from cls.paddle import Paddle
 from cls.ball import Ball
-from utils.util_functions import handle_collision_paddle_y_vel, score_handling
+from utils.util_functions import handle_collision_paddle_y_vel, score_handling, winner_handling
 
 class GameInformation():
     def __init__(self, left_score: int, right_score: int):
@@ -26,15 +26,13 @@ class Game():
         self.left_score = 0
         self.right_score = 0
         self.scores = [self.left_score, self.right_score]
-        self.victory_test = ''
-
+        self.victory_text = ''
 
     def _draw_divider(self, colors: Tuple[tuple, tuple]):
         for i in range(10, self.window_height, self.window_height // 20):
             if (i % 2) == 1: #odd i?
                 continue
             pygame.draw.rect(self.window, colors[1], (self.window_width // 2 - 5, i, 10, self.window_height / 20))
-
 
     def _draw_score(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         score_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
@@ -44,26 +42,6 @@ class Game():
 
         self.window.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
         self.window.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
-
-
-    def draw(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], draw_score: Optional[bool] = True):
-        self.window.fill(colors[0])
-
-        if draw_score:
-            self._draw_score(colors, font_settings)
-
-        self._draw_divider(colors)
-
-        for paddle in [self.left_paddle, self.right_paddle]:
-            paddle.draw(self.window)
-
-        self.ball.draw(self.window)
-        pygame.display.update()
-
-
-    def handle_paddle_movement():
-        pass
-
 
     def _handle_collision(self):
         ball = self.ball
@@ -90,7 +68,30 @@ class Game():
                     ball.x_vel *= -1
                     ball.y_vel = handle_collision_paddle_y_vel(ball, right_paddle)
 
+    def _handle_paddle_movement(self, keys: list):
+        if keys[pygame.K_w] and self.left_paddle.y > 0:
+            self.left_paddle.move(up = True)
+        elif keys[pygame.K_s] and self.left_paddle.y + self.left_paddle.height <= self.window_height:
+            self.left_paddle.move(up = False)
+        elif keys[pygame.K_UP] and self.right_paddle.y > 0:
+            self.right_paddle.move(up = True)
+        elif keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
+            self.right_paddle.move(up = False)
 
+    def draw(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], draw_score: Optional[bool] = True):
+        self.window.fill(colors[0])
+
+        if draw_score:
+            self._draw_score(colors, font_settings)
+
+        self._draw_divider(colors)
+
+        for paddle in [self.left_paddle, self.right_paddle]:
+            paddle.draw(self.window)
+
+        self.ball.draw(self.window)
+        pygame.display.update()
+        
     def draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
 
@@ -110,7 +111,6 @@ class Game():
         self.window.blit(welcome_message, text_rect_welcome.center)
         self.window.blit(enter_message, text_rect_enter.center)
         pygame.display.update()
-
 
     def draw_close(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
@@ -135,12 +135,10 @@ class Game():
     def intro_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.draw_intro(colors, font_settings)
 
-    def loop(self):
+    def loop(self, keys: list):
+        self._handle_paddle_movement(keys)
         self.ball.move()
         self._handle_collision()
 
-        scores = score_handling(self.ball, self.scores, (self.left_paddle, self.right_paddle), self.window_width)
-
-
     def close_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
-        self.draw_close()
+        self.draw_close(colors, font_settings)
