@@ -1,7 +1,7 @@
 import pygame
 import extra_files.game_constants as game_constants
 
-class Paddle:
+class Paddle():
     def __init__(self, x: int, y: int, width: int = game_constants.PADDLE_WIDTH, height: int = game_constants.PADDLE_HEIGHT,
                 vel: float = game_constants.PADDLE_VEL, color: tuple = game_constants.PADDLE_COLOR):
         self.x = self.original_x = x
