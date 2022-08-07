@@ -1,7 +1,7 @@
 import pygame
 import extra_files.game_constants as game_constants
 
-class Ball:
+class Ball():
     def __init__(self, x: float, y: float, radius: float = game_constants.BALL_RADIUS):
         self.x = self.original_x = x
         self.y = self.original_y = y
