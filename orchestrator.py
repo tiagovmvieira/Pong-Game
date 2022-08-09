@@ -11,9 +11,7 @@ import extra_files.game_constants as game_constants
 
 from utils.util_functions import *
 from game_engine import *
-from cls.ball import Ball
-from cls.paddle import Paddle
-
+from cls.game import Game
 
 def main():
     pygame.init()
@@ -23,14 +21,14 @@ def main():
     game = True
     intro = True
     clock = pygame.time.Clock()
-    cwd = os.getcwd()
-    font_path = os.path.join(cwd, 'assets')
+
+    game = Game(window, (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), 
+           (game_constants.PADDLE_WIDTH, game_constants.PADDLE_HEIGHT))
 
     while intro:
-        intro_session(clock, game_constants.FPS, window, (game_constants.BLACK, game_constants.WHITE),
-        (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), (font_path, game_constants.WELCOME_FONT_SIZE),
-        [game_constants.COLOR_DIRECTION, game_constants.DEFINED_COLOR, game_constants.COLOR_VEL]
-        )
+        clock.tick(game_constants.FPS * 2)
+        game.intro_loop((game_constants.BLACK, game_constants.WHITE),
+                        (font_path, game_constants.WELCOME_FONT_SIZE))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,31 +40,19 @@ def main():
                     intro = False
                     break
 
-    left_paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
-    right_paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
-        game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
-    ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
-
-    
     play = True
     victory = False
 
     while game:
-        left_score = 0
-        right_score = 0
-        scores = [left_score, right_score]
-
         while play:
-            victory_text = ''
+            clock.tick(game_constants.FPS)
             keys = pygame.key.get_pressed()
-            game_session(clock, game_constants.FPS, window, ball, (left_paddle, right_paddle), scores,
-                        (game_constants.BLACK, game_constants.WHITE), (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT),
-                        (font_path, game_constants.SCORE_FONT_SIZE), keys
-                        )
 
-            scores = score_handling(ball, scores, (left_paddle, right_paddle), game_constants.WINDOW_WIDTH)
+            game.loop(keys)
+            game.draw((game_constants.BLACK, game_constants.WHITE), (font_path, game_constants.SCORE_FONT_SIZE))
 
-            victory, victory_text = winner_handling(scores, victory, victory_text, game_constants.WINNING_SCORE)  
+            scores = score_handling(game.ball, game.scores, (game.left_paddle, game.right_paddle), game_constants.WINDOW_WIDTH)
+            victory, game.victory_text = winner_handling(scores, victory, game.victory_text, game_constants.WINNING_SCORE)
             if victory:
                 play = False
                 break
@@ -75,12 +61,11 @@ def main():
                 if event.type == pygame.QUIT:
                     play = False
                     break
-        
+
         while victory:
-            closing_session(window, victory_text, (game_constants.BLACK, game_constants.WHITE),
-                           (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), (font_path, game_constants.WELCOME_FONT_SIZE),
-                           [game_constants.COLOR_DIRECTION, game_constants.DEFINED_COLOR, game_constants.COLOR_VEL]
-                           )
+            clock.tick(game_constants.FPS * 2)
+            game.close_loop((game_constants.BLACK, game_constants.WHITE),
+                            (font_path, game_constants.WELCOME_FONT_SIZE))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -102,6 +87,7 @@ def main():
                 game = False
                 break
 
-
 if __name__ == '__main__':
+    cwd = os.getcwd()
+    font_path = os.path.join(cwd, 'assets')
     main()
