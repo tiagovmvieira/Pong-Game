@@ -1,7 +1,9 @@
 # imports
 import pygame
 import os
+import pyfiglet
 
+from termcolor import colored
 from typing import Tuple, List
 from cls.ball import Ball
 from cls.paddle import Paddle
@@ -23,13 +25,16 @@ def handle_collision_paddle_y_vel(ball: Ball, paddle: Paddle)-> int:
 
     return ball.y_vel
 
-def score_handling(ball: Ball, scores: List[int], paddles: Tuple[Paddle, Paddle], window_width: int)-> list:
+def score_handling(ball: Ball, scores: List[int], paddles: Tuple[Paddle, Paddle], players_info: Tuple[int, int], window_width: int)-> list:
+    goal_text = pyfiglet.figlet_format('Goal', font='isometric2')
     if ball.x > window_width:
+        print(colored(goal_text, players_info[0]))
         scores[0] += 1
         ball.reset()
         paddles[0].reset
         paddles[1].reset
     elif ball.x < 0:
+        print(colored(goal_text, players_info[1]))
         scores[1] += 1
         ball.reset()
         paddles[0].reset()
