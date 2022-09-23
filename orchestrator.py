@@ -51,7 +51,8 @@ def main():
             game.loop(keys)
             game.draw((game_constants.BLACK, game_constants.WHITE), (font_path, game_constants.SCORE_FONT_SIZE))
 
-            scores = score_handling(game.ball, game.scores, (game.left_paddle, game.right_paddle), game_constants.WINDOW_WIDTH)
+            scores = score_handling(game.ball, game.scores, (game.left_paddle, game.right_paddle)\
+            (game_constants.LEFT_PLAYER_COLOR, game_constants.RIGHT_PLAYER_COLOR), game_constants.WINDOW_WIDTH)
             victory, game.victory_text = winner_handling(scores, victory, game.victory_text, game_constants.WINNING_SCORE)
             if victory:
                 play = False
