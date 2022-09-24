@@ -43,6 +43,9 @@ class Server():
             except:
                 break
 
+        print("Lost connection")
+        connection.close()
+        
 if __name__ == '__main__':
     server = Server()
     skt = server.setup_socket()
@@ -54,6 +57,3 @@ if __name__ == '__main__':
         print("Connected to:", address)
 
         start_new_thread(server.threaded_client(connection))
-
-
-
