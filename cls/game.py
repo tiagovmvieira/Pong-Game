@@ -87,7 +87,10 @@ class Game():
         self._draw_divider(colors)
 
         for paddle in [self.left_paddle, self.right_paddle]:
-            paddle.draw(self.window)
+            if paddle == self.left_paddle:
+                paddle.draw(self.window, 'left')
+            else:
+                paddle.draw(self.window, 'right')
 
         self.ball.draw(self.window)
         pygame.display.update()
