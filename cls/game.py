@@ -95,7 +95,7 @@ class Game():
         self.ball.draw(self.window)
         pygame.display.update()
         
-    def draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
+    def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
 
         welcome_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
@@ -113,6 +113,32 @@ class Game():
 
         self.window.blit(welcome_message, text_rect_welcome.center)
         self.window.blit(enter_message, text_rect_enter.center)
+        pygame.display.update()
+
+    def __draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
+        self.window.fill(colors[0])
+        select_mode_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
+        select_mode_message = select_mode_font.render('Select Mode', 1, colors[1])
+        text_rect_select_mode = select_mode_message.get_rect()
+        text_rect_select_mode.center = (self.window_width // 2 - select_mode_message.get_width() // 2,
+                                    (self.window_height * 1 // 4 - select_mode_message.get_height() // 2)
+                                    )
+
+        single_player_message = select_mode_font.render('Single Player', 1, colors[1])
+        text_rect_single_player = single_player_message.get_rect()
+        text_rect_single_player.center = (self.window_width * 1 // 4 - single_player_message.get_width() // 2,
+                                        (self.window_height * 2 // 4 - single_player_message.get_height() // 2)
+                                        )
+
+        multi_player_message = select_mode_font.render('Multi Player', 1, colors[1])
+        text_rect_multi_player = multi_player_message.get_rect()
+        text_rect_multi_player.center = (self.window_width * 3 // 4 - multi_player_message.get_width() // 2,
+                                        (self.window_height * 2 // 4 - multi_player_message.get_height() // 2)
+                                        )
+
+        self.window.blit(select_mode_message, text_rect_select_mode.center)
+        self.window.blit(single_player_message, text_rect_single_player.center)
+        self.window.blit(multi_player_message, text_rect_multi_player.center)
         pygame.display.update()
 
     def draw_close(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
@@ -135,8 +161,8 @@ class Game():
         self.window.blit(revenge_message, text_rect_revenge.center)
         pygame.display.update()
 
-    def intro_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
-        self.draw_intro(colors, font_settings)
+    def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], cover: bool = False):
+        self.__draw_cover(colors, font_settings) if cover else self.__draw_intro(colors, font_settings)
 
     def loop(self, keys: list):
         self._handle_paddle_movement(keys)

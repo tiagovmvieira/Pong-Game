@@ -6,7 +6,6 @@ author: tiago vieira, tiagomvmvieira@hotmail.com
 #imports
 import pygame
 import os
-
 import extra_files.game_constants as game_constants
 
 from utils.util_functions import *
@@ -18,28 +17,31 @@ def main():
     window = pygame.display.set_mode((game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT))
     pygame.display.set_caption("Pong Game")
 
+    cover = True
+    intro = False
     game = True
-    intro = True
     clock = pygame.time.Clock()
 
     game = Game(window, (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), 
            (game_constants.PADDLE_WIDTH, game_constants.PADDLE_HEIGHT))
 
-    while intro:
+    while cover or intro:
         clock.tick(game_constants.FPS * 2)
-        game.intro_loop((game_constants.BLACK, game_constants.WHITE),
-                        (font_path, game_constants.WELCOME_FONT_SIZE))
+        game.inital_loop((game_constants.BLACK, game_constants.WHITE),
+                         (font_path, game_constants.WELCOME_FONT_SIZE), cover = True if cover else False)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                cover = False
                 intro = False
                 game = False
                 break
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_KP_ENTER:
-                    intro = False
+                    cover = False
+                    intro = True
                     break
-
+    
     play = True
     victory = False
 
