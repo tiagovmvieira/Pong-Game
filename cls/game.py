@@ -5,6 +5,7 @@ import os
 from typing import Tuple, Optional, List
 from cls.paddle import Paddle
 from cls.ball import Ball
+from cls.button import Button
 from utils.util_functions import handle_collision_paddle_y_vel, score_handling, winner_handling
 
 class GameInformation():
@@ -28,13 +29,13 @@ class Game():
         self.scores = [self.left_score, self.right_score]
         self.victory_text = ''
 
-    def _draw_divider(self, colors: Tuple[tuple, tuple]):
+    def __draw_divider(self, colors: Tuple[tuple, tuple]):
         for i in range(10, self.window_height, self.window_height // 20):
             if (i % 2) == 1: #odd i?
                 continue
             pygame.draw.rect(self.window, colors[1], (self.window_width // 2 - 5, i, 10, self.window_height / 20))
 
-    def _draw_score(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
+    def __draw_score(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         score_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
         
         left_score_text = score_font.render('{}'.format(self.scores[0]), 1, colors[1])
@@ -43,7 +44,7 @@ class Game():
         self.window.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
         self.window.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
 
-    def _handle_collision(self):
+    def __handle_collision(self):
         ball = self.ball
         left_paddle = self.left_paddle
         right_paddle = self.right_paddle
@@ -68,7 +69,7 @@ class Game():
                     ball.x_vel *= -1
                     ball.y_vel = handle_collision_paddle_y_vel(ball, right_paddle)
 
-    def _handle_paddle_movement(self, keys: list):
+    def __handle_paddle_movement(self, keys: list):
         if keys[pygame.K_w] and self.left_paddle.y > 0:
             self.left_paddle.move(up = True)
         elif keys[pygame.K_s] and self.left_paddle.y + self.left_paddle.height <= self.window_height:
@@ -78,38 +79,28 @@ class Game():
         elif keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
             self.right_paddle.move(up = False)
 
-    def draw(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], draw_score: Optional[bool] = True):
+    def __draw_button(x: int, y: int, text: str, window: pygame.Surface):
+        button = Button(x, y, text)
+        button.draw(window)
+
+    def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int]):
         self.window.fill(colors[0])
 
-        if draw_score:
-            self._draw_score(colors, font_settings)
-
-        self._draw_divider(colors)
-
-        for paddle in [self.left_paddle, self.right_paddle]:
-            if paddle == self.left_paddle:
-                paddle.draw(self.window, 'left')
-            else:
-                paddle.draw(self.window, 'right')
-
-        self.ball.draw(self.window)
-        pygame.display.update()
-        
-    def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
-        self.window.fill(colors[0])
-
-        welcome_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
-        welcome_message = welcome_font.render('Welcome to Pong!', 1, colors[1])
+        cover_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
+        welcome_message = cover_font.render('Welcome to Pong!', 1, colors[1])
         text_rect_welcome = welcome_message.get_rect()
         text_rect_welcome.center = (self.window_width // 2 - welcome_message.get_width() // 2,
                                    (self.window_height * 1 // 4 - welcome_message.get_height() // 2)
                                    )
 
-        enter_message = welcome_font.render('Press ENTER to continue', 1, colors[1])
+        enter_message = cover_font.render('Press ENTER to continue', 1, colors[1])
         text_rect_enter = enter_message.get_rect()
         text_rect_enter.center = (self.window_width // 2 - enter_message.get_width() // 2,
                                  (self.window_height * 3 // 4 - enter_message.get_height() // 2)
                                  )
+
+        self.__draw_button(button_settings[2], button_settings[3], 'Single Player', cover_font, colors[1], self.window)
+        self.__draw_button(button_settings[2], button_settings[3], 'MultiPlayer', cover_font, colors[1], self.window)
 
         self.window.blit(welcome_message, text_rect_welcome.center)
         self.window.blit(enter_message, text_rect_enter.center)
@@ -141,6 +132,24 @@ class Game():
         self.window.blit(multi_player_message, text_rect_multi_player.center)
         pygame.display.update()
 
+    def draw(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], draw_score: Optional[bool] = True):
+        self.window.fill(colors[0])
+
+        if draw_score:
+            self.__draw_score(colors, font_settings)
+
+        self.__draw_divider(colors)
+
+        for paddle in [self.left_paddle, self.right_paddle]:
+            if paddle == self.left_paddle:
+                paddle.draw(self.window, 'left')
+            else:
+                paddle.draw(self.window, 'right')
+
+        self.ball.draw(self.window)
+        pygame.display.update()
+
+
     def draw_close(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
 
@@ -161,13 +170,13 @@ class Game():
         self.window.blit(revenge_message, text_rect_revenge.center)
         pygame.display.update()
 
-    def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], cover: bool = False):
-        self.__draw_cover(colors, font_settings) if cover else self.__draw_intro(colors, font_settings)
+    def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int], cover: bool = False):
+        self.__draw_cover(colors, font_settings) if cover else self.__draw_intro(colors, font_settings, button_settings)
 
     def loop(self, keys: list):
-        self._handle_paddle_movement(keys)
+        self.__handle_paddle_movement(keys)
         self.ball.move()
-        self._handle_collision()
+        self.__handle_collision()
 
     def close_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.draw_close(colors, font_settings)
