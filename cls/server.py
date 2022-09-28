@@ -1,11 +1,13 @@
 import socket
-from _thread import *
+import pickle
 import sys
+
+from _thread import *
 
 class Server():
     def __init__(self):
-        self.server = ""
-        self.port = 5555
+        self.server = "192.168.1.9"
+        self.port = 5555   
 
     @staticmethod
     def setup_socket():
@@ -23,28 +25,28 @@ class Server():
         else:
             skt.listen()        
         print("Waiting for a connection, Server Started!")
+    
+def threaded_client(connection: socket):
+    connection.send(str.encode("Connected"))
+    reply = ""
+    while True:
+        try:
+            data = pickle.loads(connection.recv(2048))
+            reply = data.decode(encoding='UTF-8')
 
-    def threaded_client(self, connection):
-        print(type(connection))
-        reply = ""
-        while True:
-            try:
-                data = connection.recv(2048)
-                reply = data.decode('utf-8')
-
-                if not data:
-                    print("Client disconnected from the Server")
-                    break
-                else:
-                    print("Recieved: ", reply)
-                    print("Sending: ", reply)
-
-                connection.sendall(str.encode(reply)) # encode into a bytes object
-            except:
+            if not data:
+                print("Client disconnected from the Server")
                 break
+            else:
+                print("Recieved: ", reply)
+                print("Sending: ", reply)
 
-        print("Lost connection")
-        connection.close()
+            connection.sendall(str.encode(reply)) # encode into a bytes object
+        except:
+            break
+
+    print("Lost connection")
+    connection.close()
         
 if __name__ == '__main__':
     server = Server()
@@ -56,4 +58,4 @@ if __name__ == '__main__':
         connection, address = skt.accept() #accept any incoming connections into our server (connection and adress (ip))
         print("Connected to:", address)
 
-        start_new_thread(server.threaded_client(connection))
+        start_new_thread(threaded_client, (connection,))
