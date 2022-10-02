@@ -2,11 +2,10 @@ import pygame
 import random
 import os
 
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Union
 from cls.paddle import Paddle
 from cls.ball import Ball
-from cls.button import Button
-from utils.util_functions import handle_collision_paddle_y_vel, score_handling, winner_handling
+from utils.util_functions import handle_collision_paddle_y_vel
 
 class GameInformation():
     def __init__(self, left_score: int, right_score: int):
@@ -44,6 +43,16 @@ class Game():
         self.window.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
         self.window.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
 
+    def __color_change(self, color_settings: List[Union[tuple, int]])-> list:
+        for i in range(len(color_settings[0])):
+            color_settings[1][i] += color_settings[2] * color_settings[0][i]
+            if color_settings[1][i] >= 255:
+                color_settings[1][i] = 0
+            elif color_settings[1][i] <= 0:
+                color_settings[1][i] = 255
+
+        return color_settings[1]
+
     def __handle_collision(self):
         ball = self.ball
         left_paddle = self.left_paddle
@@ -79,11 +88,7 @@ class Game():
         elif keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
             self.right_paddle.move(up = False)
 
-    def __draw_button(x: int, y: int, text: str, window: pygame.Surface):
-        button = Button(x, y, text)
-        button.draw(window)
-
-    def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int]):
+    def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], color_settings: List[Union[tuple, int]]):
         self.window.fill(colors[0])
 
         cover_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
@@ -93,20 +98,18 @@ class Game():
                                    (self.window_height * 1 // 4 - welcome_message.get_height() // 2)
                                    )
 
-        enter_message = cover_font.render('Press ENTER to continue', 1, colors[1])
+        enter_message = cover_font.render('Press ENTER to continue', 1, color_settings[1])
         text_rect_enter = enter_message.get_rect()
         text_rect_enter.center = (self.window_width // 2 - enter_message.get_width() // 2,
                                  (self.window_height * 3 // 4 - enter_message.get_height() // 2)
                                  )
 
-        self.__draw_button(button_settings[2], button_settings[3], 'Single Player', cover_font, colors[1], self.window)
-        self.__draw_button(button_settings[2], button_settings[3], 'MultiPlayer', cover_font, colors[1], self.window)
-
         self.window.blit(welcome_message, text_rect_welcome.center)
         self.window.blit(enter_message, text_rect_enter.center)
+        color_settings[1] = self.__color_change(color_settings)
         pygame.display.update()
 
-    def __draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
+    def __draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int]):
         self.window.fill(colors[0])
         select_mode_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
         select_mode_message = select_mode_font.render('Select Mode', 1, colors[1])
@@ -149,7 +152,6 @@ class Game():
         self.ball.draw(self.window)
         pygame.display.update()
 
-
     def draw_close(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
 
@@ -170,8 +172,9 @@ class Game():
         self.window.blit(revenge_message, text_rect_revenge.center)
         pygame.display.update()
 
-    def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int], cover: bool = False):
-        self.__draw_cover(colors, font_settings) if cover else self.__draw_intro(colors, font_settings, button_settings)
+    def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], color_settings: List[Union[tuple, int]],\
+                    button_settings: Tuple[int], cover: bool = False):
+        self.__draw_cover(colors, font_settings, color_settings) if cover else self.__draw_intro(colors, font_settings, button_settings)
 
     def loop(self, keys: list):
         self.__handle_paddle_movement(keys)
