@@ -16,9 +16,8 @@ class Ball():
         self.color = game_constants.BALL_COLOR
 
     def __repr__(self):
-        return 'Ball(x: {}, y: {}, radius: {}, x_vel: {}, y_vel: {}, color: {})'.format(self.x,\
-            self.y, self.radius, self.x_vel, self.y_vel, self.color)
-
+        return f"Ball(x: {self.x}, y: {self.y}, radius: {self.radius}, x_vel: {self.x_vel}, y_vel: {self.y_vel}, color: {self.color})"
+        
     def __str__(self):
         return self.__repr__()
 
