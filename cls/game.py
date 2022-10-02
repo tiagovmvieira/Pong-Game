@@ -1,3 +1,4 @@
+from extra_files import game_constants
 import pygame
 import random
 import os
@@ -5,6 +6,7 @@ import os
 from typing import Tuple, Optional, List, Union
 from cls.paddle import Paddle
 from cls.ball import Ball
+from cls.button import Button
 from utils.util_functions import handle_collision_paddle_y_vel
 
 class GameInformation():
@@ -109,7 +111,7 @@ class Game():
         color_settings[1] = self.__color_change(color_settings)
         pygame.display.update()
 
-    def __draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], button_settings: Tuple[int]):
+    def __draw_intro(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
         self.window.fill(colors[0])
         select_mode_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
         select_mode_message = select_mode_font.render('Select Mode', 1, colors[1])
@@ -118,21 +120,36 @@ class Game():
                                     (self.window_height * 1 // 4 - select_mode_message.get_height() // 2)
                                     )
 
-        single_player_message = select_mode_font.render('Single Player', 1, colors[1])
-        text_rect_single_player = single_player_message.get_rect()
-        text_rect_single_player.center = (self.window_width * 1 // 4 - single_player_message.get_width() // 2,
-                                        (self.window_height * 2 // 4 - single_player_message.get_height() // 2)
-                                        )
+        single_player_button = Button(76, 230, game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, 'Single Player',\
+                                    select_mode_font)
 
-        multi_player_message = select_mode_font.render('Multi Player', 1, colors[1])
-        text_rect_multi_player = multi_player_message.get_rect()
-        text_rect_multi_player.center = (self.window_width * 3 // 4 - multi_player_message.get_width() // 2,
-                                        (self.window_height * 2 // 4 - multi_player_message.get_height() // 2)
-                                        )
+        multi_player_button = Button(416, 230, game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, 'Multi Player',\
+                                    select_mode_font)
+        
+        single_player_button.draw(self.window)
+        multi_player_button.draw(self.window)
 
         self.window.blit(select_mode_message, text_rect_select_mode.center)
-        self.window.blit(single_player_message, text_rect_single_player.center)
-        self.window.blit(multi_player_message, text_rect_multi_player.center)
+        pygame.display.update()
+
+    def __draw_close(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
+        self.window.fill(colors[0])
+
+        close_font = pygame.font.Font(os.path.join(font_settings[0], os.listdir(font_settings[0])[0]), font_settings[1])
+        winner_message = close_font.render('{}'.format(self.victory_text), 1, colors[1])
+        text_rect_winner = winner_message.get_rect()
+        text_rect_winner.center = (self.window_width // 2 - winner_message.get_width() // 2,
+                                  (self.window_height * 1 // 4 - winner_message.get_height() // 2)
+                                  )
+
+        revenge_message = close_font.render('{}'.format('Do you want to play again? (Y/N)'), 1, colors[1])
+        text_rect_revenge = revenge_message.get_rect()
+        text_rect_revenge.center = (self.window_width // 2 - revenge_message.get_width() // 2,
+                                   (self.window_height * 3 // 4 - revenge_message.get_height() // 2)
+                                   )
+
+        self.window.blit(winner_message, text_rect_winner.center)
+        self.window.blit(revenge_message, text_rect_revenge.center)
         pygame.display.update()
 
     def draw(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], draw_score: Optional[bool] = True):
@@ -173,8 +190,8 @@ class Game():
         pygame.display.update()
 
     def inital_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], color_settings: List[Union[tuple, int]],\
-                    button_settings: Tuple[int], cover: bool = False):
-        self.__draw_cover(colors, font_settings, color_settings) if cover else self.__draw_intro(colors, font_settings, button_settings)
+                    cover: bool = False):
+        self.__draw_cover(colors, font_settings, color_settings) if cover else self.__draw_intro(colors, font_settings)
 
     def loop(self, keys: list):
         self.__handle_paddle_movement(keys)
@@ -182,4 +199,4 @@ class Game():
         self.__handle_collision()
 
     def close_loop(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int]):
-        self.draw_close(colors, font_settings)
+        self.__draw_close(colors, font_settings)
