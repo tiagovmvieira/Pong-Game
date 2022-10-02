@@ -14,8 +14,7 @@ class Paddle():
         self.colors = colors
 
     def __repr__(self):
-        return 'Paddle(x: {}, y: {}, width: {}, height: {}, vel: {}, colors: {})'.format(self.x, self.y,\
-            self.width, self.height, self.vel, self.colors)
+        return f"Paddle(x: {self.x}, y: {self.y}, width: {self.width}, height: {self.height}, vel: {self.vel}, colors: {self.colors})"
 
     def __str__(self):
         return self.__repr__()
