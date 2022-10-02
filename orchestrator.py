@@ -28,7 +28,8 @@ def main():
     while cover or intro:
         clock.tick(game_constants.FPS * 2)
         game.inital_loop((game_constants.BLACK, game_constants.WHITE),
-                        (font_path, game_constants.WELCOME_FONT_SIZE), 
+                        (font_path, game_constants.WELCOME_FONT_SIZE),
+                        [game_constants.COLOR_DIRECTION, game_constants.DEFINED_COLOR, game_constants.COLOR_VEL], 
                         (game_constants.BUTTON_WIDTH, game_constants.BUTTON_HEIGHT, game_constants.BUTTON_X_COORDINATE, game_constants.BUTTON_Y_COORDINATE),
                         cover = True if cover else False)
 
