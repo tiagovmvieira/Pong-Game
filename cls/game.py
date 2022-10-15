@@ -62,23 +62,17 @@ class Game():
 
         # collision with the field horizonal boundaries
         if (ball.y + ball.radius >= self.window_height): #down (y)
-            ball.y_vel *= -1
+            ball.change_direction(down_boundary_collision = True)
         elif (ball.y - ball.radius <= 0): #up (y)
-            ball.y_vel *= -1
-    
+            ball.change_direction(up_boundary_collision = True)
+
         # paddle collision:
         if ball.x_vel < 0:
             #going to collide to the left paddle
-            if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height:
-                if ball.x - ball.radius <= left_paddle.x + left_paddle.width:
-                    ball.x_vel *= -1
-                    ball.y_vel = handle_collision_paddle_y_vel(ball, left_paddle)
+            ball.change_direction(paddle = left_paddle, left_paddle_collision = True)
         else:
             # going to collide to the right paddle
-            if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height:
-                if ball.x + ball.radius >= right_paddle.x:
-                    ball.x_vel *= -1
-                    ball.y_vel = handle_collision_paddle_y_vel(ball, right_paddle)
+            ball.change_direction(paddle = right_paddle, right_paddle_collision=True)
 
     def __handle_paddle_movement(self, keys: list):
         if keys[pygame.K_w] and self.left_paddle.y > 0:
