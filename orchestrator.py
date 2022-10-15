@@ -22,27 +22,28 @@ def main():
     game_event = True
     clock = pygame.time.Clock()
 
-    game = Game(window, (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), 
-           (game_constants.PADDLE_WIDTH, game_constants.PADDLE_HEIGHT))
+    game = Game(window, game_constants.WINNING_SCORE, (game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT), 
+           (game_constants.PADDLE_WIDTH, game_constants.PADDLE_HEIGHT),
+           (game_constants.LEFT_PLAYER_COLOR, game_constants.RIGHT_PLAYER_COLOR))
 
-    while cover_event or intro_event:
-        clock.tick(game_constants.FPS * 2)
-        game.inital_loop((game_constants.BLACK, game_constants.WHITE),
-                        (font_path, game_constants.WELCOME_FONT_SIZE),
-                        [game_constants.COLOR_DIRECTION, game_constants.DEFINED_COLOR, game_constants.COLOR_VEL], 
-                        cover = True if cover_event else False)
+    # while cover_event or intro_event:
+    #    clock.tick(game_constants.FPS * 2)
+    #    game.inital_loop((game_constants.BLACK, game_constants.WHITE),
+    #                    (font_path, game_constants.WELCOME_FONT_SIZE),
+    #                    [game_constants.COLOR_DIRECTION, game_constants.DEFINED_COLOR, game_constants.COLOR_VEL], 
+    #                    cover = True if cover_event else False)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                cover_event = False
-                intro_event = False
-                game_event = False
-                break
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP_ENTER:
-                    cover_event = False
-                    intro_event = True
-                    break
+    #    for event in pygame.event.get():
+    #        if event.type == pygame.QUIT:
+    #            cover_event = False
+    #            intro_event = False
+    #            game_event = False
+    #            break
+    #        elif event.type == pygame.KEYDOWN:
+    #            if event.key == pygame.K_KP_ENTER:
+    #                cover_event = False
+    #               intro_event = True
+    #                break
     
     play_event = True
     victory_event = False
@@ -54,10 +55,8 @@ def main():
 
             game.loop(keys)
             game.draw((game_constants.BLACK, game_constants.WHITE), (font_path, game_constants.SCORE_FONT_SIZE))
+            victory_event = game.winner_handling(victory_event)
 
-            scores = score_handling(game.ball, game.scores, (game.left_paddle, game.right_paddle),
-            (game_constants.LEFT_PLAYER_COLOR, game_constants.RIGHT_PLAYER_COLOR), game_constants.WINDOW_WIDTH)
-            victory_event, game.victory_text = winner_handling(scores, victory_event, game.victory_text, game_constants.WINNING_SCORE)
             if victory_event:
                 play_event = False
                 break
@@ -79,13 +78,14 @@ def main():
                     break
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
+                        game.reset_scores()
                         victory_event = False
-                        play_event = True 
+                        play_event = True
                         break
                     elif event.key == pygame.K_n:
                         victory_event = False
                         game_event = False
-                        break
+                break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
