@@ -83,11 +83,11 @@ class Game():
     def __handle_paddle_movement(self, keys: list):
         if keys[pygame.K_w] and self.left_paddle.y > 0:
             self.left_paddle.move(up = True)
-        elif keys[pygame.K_s] and self.left_paddle.y + self.left_paddle.height <= self.window_height:
+        if keys[pygame.K_s] and self.left_paddle.y + self.left_paddle.height <= self.window_height:
             self.left_paddle.move(up = False)
-        elif keys[pygame.K_UP] and self.right_paddle.y > 0:
+        if keys[pygame.K_UP] and self.right_paddle.y > 0:
             self.right_paddle.move(up = True)
-        elif keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
+        if keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
             self.right_paddle.move(up = False)
 
     def __draw_cover(self, colors: Tuple[tuple, tuple], font_settings: Tuple[str, int], color_settings: List[Union[tuple, int]]):
