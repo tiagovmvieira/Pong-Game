@@ -45,6 +45,18 @@ class Splash(BaseState):
 
         return color_settings[1]
 
+    def startup(self, persistent):
+        """This method starts the state it self, keep the persisting info from a previous state."""
+        self.persist = persistent
+
+    def get_event(self, event: pygame.event.Event)-> None:
+        """This method handles how to react to specific events"""
+        if event.type == pygame.QUIT:
+            self.quit = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_KP_ENTER:
+                self.done = True
+
     def update(self, dt: int)-> None:
         """This method handles the update of the state"""
         self.time_active += dt
