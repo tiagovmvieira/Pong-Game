@@ -31,10 +31,11 @@ class Splash(BaseState):
 
     @classmethod
     def _set_defined_color(cls, defined_color_to_define: list)-> None:
-        """This function sets the attribute variable defined color to the one resulting from the color change method"""
+        """This class method sets the attribute variable defined color to the one resulting from the color change method"""
         cls._defined_color = defined_color_to_define
 
     def _color_change(self, color_settings: List[Union[tuple, int]])-> list:
+        """This method acts like an util to change the defined color considering the color_settings"""
         for i in range(len(color_settings[0])):
             color_settings[1][i] += color_settings[2] * color_settings[0][i]
             if color_settings[1][i] >= 255:
@@ -44,12 +45,14 @@ class Splash(BaseState):
 
         return color_settings[1]
 
-    def update(self, dt)-> None:
+    def update(self, dt: int)-> None:
+        """This method handles the update of the state"""
         self.time_active += dt
         if self.time_active >= 5000:
             self.done = True
 
-    def draw(self, surface)-> None:
+    def draw(self, surface: pygame.Surface)-> None:
+        """This method draws the specified component on the surface"""
         surface.fill(game_constants.PURE_BLACK)
         surface.blit(self.welcome_message, self.text_rect_welcome.center)
         surface.blit(self.enter_message, self.text_rect_enter.center)
