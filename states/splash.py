@@ -3,7 +3,7 @@ import os
 import extra_files.game_constants as game_constants
 
 from .base import BaseState
-from typing import List, Union
+from typing import List, Union, Final
 
 
 class Splash(BaseState):
@@ -26,7 +26,7 @@ class Splash(BaseState):
                                     (self.window_height * 3 // 4 - self.enter_message.get_height() // 2)
                                     )
 
-        self.next_state: str = "MENU"
+        self.next_state: Final[str] = "MENU"
         self.time_active: int = 0
 
     @classmethod
@@ -45,12 +45,7 @@ class Splash(BaseState):
 
         return color_settings[1]
 
-    def startup(self, persistent):
-        """This method starts the state it self, keep the persisting info from a previous state."""
-        self.persist = persistent
-
     def get_event(self, event: pygame.event.Event)-> None:
-        """This method handles how to react to specific events"""
         if event.type == pygame.QUIT:
             self.quit = True
         elif event.type == pygame.KEYDOWN:
@@ -58,13 +53,11 @@ class Splash(BaseState):
                 self.done = True
 
     def update(self, dt: int)-> None:
-        """This method handles the update of the state"""
         self.time_active += dt
-        if self.time_active >= 5000:
+        if self.time_active >= 500000:
             self.done = True
 
     def draw(self, surface: pygame.Surface)-> None:
-        """This method draws the specified component on the surface"""
         surface.fill(game_constants.PURE_BLACK)
         surface.blit(self.welcome_message, self.text_rect_welcome.center)
         surface.blit(self.enter_message, self.text_rect_enter.center)
