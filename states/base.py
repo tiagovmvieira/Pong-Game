@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 
 class BaseState(ABC):
     def __init__(self)-> None:
+        """__init__ constructor"""
         if self.__class__ == BaseState:
             raise TypeError("Instantiating the Abstract Class")
 
@@ -14,21 +15,20 @@ class BaseState(ABC):
 
         self.done: bool = False
         self.quit: bool = False
-        self.next_state: None = None
+        self.next_state: str = ''
         self.screen_rect = pygame.display.get_surface().get_rect()
         self.persist: dict = {}
 
         self._root_dir = os.getcwd()
         self.assets_dir = os.path.join(self._root_dir, 'assets')
 
-    @abstractmethod
     def startup(self, persistent):
-        """This method sets the persistent data between states, thus allowing data diffusion through the states"""
-        pass
+        """This method sets the persistent data between states, thus allowing data diffusion through the game states"""
+        self.persist = persistent
 
     @abstractmethod
-    def get_event(self, event: pygame.event.Event):
-        """This method handles how to react to specific events"""
+    def get_event(self, event: pygame.event.Event, keys: pygame.key.ScancodeWrapper):
+        """This method handles how to react to specific events and keys pressed"""
         pass
 
     @abstractmethod
