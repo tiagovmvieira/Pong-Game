@@ -1,6 +1,10 @@
 import pygame
 import os
+import pyfiglet
+
 import extra_files.game_constants as game_constants
+
+from termcolor import colored
 
 from .base import BaseState
 from cls.paddle import Paddle
@@ -10,8 +14,8 @@ class GamePlay(BaseState):
     def __init__(self)-> None:
         """__init__ constructor"""
         super().__init__()
-        # self.winning_score = winning_score
 
+        self.winning_score = game_constants.WINNING_SCORE
         self.left_score: int = 0
         self.right_score: int = 0
         self.victory_text: str = ''
@@ -20,6 +24,9 @@ class GamePlay(BaseState):
         self.right_paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
                                 game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
         self.ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
+
+        self.left_player_color = game_constants.LEFT_PLAYER_COLOR
+        self.right_player_color = game_constants.RIGHT_PLAYER_COLOR
 
     def _handle_paddle_movement(self)-> None:
         """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
@@ -51,6 +58,22 @@ class GamePlay(BaseState):
         else:
             # going to collide to the right paddle
             self.ball.change_direction(paddle = self.right_paddle, right_paddle_collision = True)
+
+    def _score_handling(self):
+        """This method handles the result score of the game, and the corresponding commands"""
+        goal_text = pyfiglet.figlet_format('Goal', font='isometric2')
+
+        if self.ball.x > self.window_width or self.ball.x < 0:
+            self.ball.reset()
+            self.left_paddle.reset()
+            self.right_paddle.reset()
+
+        if self.ball.x > self.window_width:
+            print(colored(goal_text, self.left_player_color))
+            self.left_score += 1
+        elif self.ball.x < 0:
+            print(colored(goal_text, self.right_player_color))
+            self.right_score += 1
 
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
