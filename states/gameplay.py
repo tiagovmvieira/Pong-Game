@@ -2,12 +2,9 @@ import pygame
 import os
 import extra_files.game_constants as game_constants
 
-from typing import Tuple, Optional, List, Union
-
 from .base import BaseState
 from cls.paddle import Paddle
 from cls.ball import Ball
-from cls.button import Button
 
 class GamePlay(BaseState):
     def __init__(self)-> None:
@@ -24,8 +21,11 @@ class GamePlay(BaseState):
                                 game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
         self.ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
 
-    def _handle_paddle_movement(self, keys: list)-> None:
-        """This method handle the paddle movement based on the keys that are being pressed and retrieved on the get_event method"""
+    def _handle_paddle_movement(self)-> None:
+        """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
+
+        keys = pygame.key.get_pressed()
+
         if keys[pygame.K_w] and self.left_paddle.y > 0:
             self.left_paddle.move(up = True)
         if keys[pygame.K_s] and self.left_paddle.y + self.left_paddle.height <= self.window_height:
@@ -35,9 +35,24 @@ class GamePlay(BaseState):
         if keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
             self.right_paddle.move(up = False)
 
-    def get_event(self, event: pygame.event.Event)-> None:
-        keys = pygame.key.get_pressed()
+    def _handle_collision(self)-> None:
+        """This method handles ball collisions with field horizontal boundaries and paddles"""
+        
+        # collision with the field horizontal boundaries
+        if self.ball.y + self.ball.radius >= self.window_height: #down (y)
+            self.ball.change_direction(down_boundary_collision = True)
+        elif (self.ball.y - self.ball.radius <= 0): #up (y)
+            self.ball.change_direction(up_boundary_collision = True)
 
+        # paddle collision:
+        if self.ball.x_vel < 0:
+            # going to colllide to the left paddle
+            self.ball.change_direction(paddle = self.left_paddle, left_paddle_collision = True)
+        else:
+            # going to collide to the right paddle
+            self.ball.change_direction(paddle = self.right_paddle, right_paddle_collision = True)
+
+    def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self.quit = True
         if event.type == pygame.KEYDOWN:
@@ -47,8 +62,6 @@ class GamePlay(BaseState):
             if event.key == pygame.K_m:
                 self.next_state: str = "GAME_OVER"
                 self.done = True
-        
-        self._handle_paddle_movement(keys)
 
     def update(self, dt: int)-> None:
         pass
