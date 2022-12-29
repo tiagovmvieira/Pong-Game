@@ -100,6 +100,15 @@ class GamePlay(BaseState):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.next_state: str = "GAME_PAUSE"
+                self.persist.update(
+                    {
+                        "left_paddle": self.left_paddle,
+                        "right_paddle": self.right_paddle,
+                        "ball": self.ball,
+                        "left_player_score": self._left_player_score,
+                        "right_player_score": self._right_player_score
+                    }
+                )
                 self.done = True
             if event.key == pygame.K_m:
                 self.next_state: str = "GAME_OVER"
@@ -137,4 +146,3 @@ class GamePlay(BaseState):
         self.right_score_text = self.score_font.render('{}'.format(self._right_player_score), True, game_constants.WHITE)
 
         self.ball.draw(surface)
-        
