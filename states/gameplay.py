@@ -70,18 +70,17 @@ class GamePlay(BaseState):
         """This method handles the result score of the game, and the corresponding commands"""
         goal_text = pyfiglet.figlet_format('Goal', font='isometric2')
 
+        if self.ball.x > self.window_width:
+            print(colored(goal_text, self.left_player_color))
+            self._set_player_score(left_player=True)
+        elif self.ball.x < 0:
+            print(colored(goal_text, self.right_player_color))
+            self._set_player_score()
+
         if self.ball.x > self.window_width or self.ball.x < 0:
             self.ball.reset()
             self.left_paddle.reset()
             self.right_paddle.reset()
-
-        if self.ball.x > self.window_width:
-            print(colored(goal_text, self.left_player_color))
-            self.left_score += 1
-            self._set_player_score(left_player=True)
-        elif self.ball.x < 0:
-            print(colored(goal_text, self.right_player_color))
-            self.right_score += 1
 
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
