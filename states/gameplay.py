@@ -12,15 +12,15 @@ from cls.paddle import Paddle
 from cls.ball import Ball
 
 class GamePlay(BaseState):
-    _left_player_score : int = 0
-    _right_player_score : int = 0 
+    _left_player_score : Final[int] = 0
+    _right_player_score : Final[int] = 0 
 
     def __init__(self)-> None:
         """__init__ constructor"""
         super().__init__()
 
         self.winning_score = game_constants.WINNING_SCORE
-        self.victory_text: str = ''
+        self.winner_message: str = ''
 
         self.left_paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
         self.right_paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
@@ -31,13 +31,17 @@ class GamePlay(BaseState):
         self.right_player_color = game_constants.RIGHT_PLAYER_COLOR
 
     @classmethod
-    def _set_player_score(cls, left_player: bool = False)-> None:
-        if left_player:
-            cls._left_player_score += 1
+    def _set_player_score(cls, **kwargs)-> None:
+        """This method sets the player(s) score based on the **kwargs that are being passed"""
+        if kwargs.get('reset_players_score'):
+            cls._left_player_score, cls._right_player_score = 0, 0
         else:
-            cls._right_player_score += 1
+            if kwargs.get('left_player'):
+                cls._left_player_score += 1
+            else:
+                cls._right_player_score += 1
 
-    def _handle_paddle_movement(self)-> None:
+    def handle_paddle_movement(self)-> None:
         """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
         keys = pygame.key.get_pressed()
 
@@ -50,7 +54,7 @@ class GamePlay(BaseState):
         if keys[pygame.K_DOWN] and self.right_paddle.y + self.right_paddle.height <= self.window_height:
             self.right_paddle.move(up = False)
 
-    def _handle_collision(self)-> None:
+    def handle_collision(self)-> None:
         """This method handles ball collisions with field horizontal boundaries and paddles"""
         # collision with the field horizontal boundaries
         if self.ball.y + self.ball.radius >= self.window_height: #down (y)
@@ -66,7 +70,7 @@ class GamePlay(BaseState):
             # going to collide to the right paddle
             self.ball.change_direction(paddle = self.right_paddle, right_paddle_collision = True)
 
-    def _score_handling(self):
+    def score_handling(self)-> None:
         """This method handles the result score of the game, and the corresponding commands"""
         goal_text = pyfiglet.figlet_format('Goal', font='isometric2')
 
@@ -81,6 +85,14 @@ class GamePlay(BaseState):
             self.ball.reset()
             self.left_paddle.reset()
             self.right_paddle.reset()
+
+    def winner_handling(self)-> None:
+        if self._left_player_score == self.winning_score or self._right_player_score == self.winning_score:
+            self.winner_message = "Left Player Won!" if self._left_player_score == self.winning_score else "Right Player Won!"
+            self.persist["winner_message"] = self.winner_message
+            self._set_player_score(reset_players_score=True)
+            self.next_state: str = "GAME_OVER"
+            self.done = True
 
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
