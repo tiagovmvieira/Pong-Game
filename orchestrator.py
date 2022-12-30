@@ -14,7 +14,7 @@ from states.gameplay import GamePlay
 from states.game_pause import GamePause
 from states.game_over import GameOver
 
-from game import Game
+from cls.game import Game
 
 
 class Orchestrator:
