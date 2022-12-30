@@ -62,6 +62,18 @@ class GamePause(BaseState):
                 continue
             pygame.draw.rect(surface, game_constants.WHITE, (self.window_width // 2 - 5, i, 10, self.window_height / 20))
 
+        # score
+        left_player_score = self.persist.get("left_player_score", None)
+        right_player_score = self.persist.get("right_player_score", None)
+    
+        score_font = pygame.font.Font(os.path.join(self.assets_dir, os.listdir(self.assets_dir)[0]), game_constants.SCORE_FONT_SIZE)
+
+        left_score_text = score_font.render('{}'.format(left_player_score), True, game_constants.WHITE)
+        right_score_text = score_font.render('{}'.format(right_player_score), True, game_constants.WHITE)
+    
+        surface.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
+        surface.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
+
     def draw(self, surface: pygame.Surface)-> None:
         surface.fill(game_constants.PURE_BLACK)
 
