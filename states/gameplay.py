@@ -12,14 +12,14 @@ from cls.paddle import Paddle
 from cls.ball import Ball
 
 class GamePlay(BaseState):
-    _left_player_score : Final[int] = 0
-    _right_player_score : Final[int] = 0 
+    left_player_score : Final[int] = 0
+    right_player_score : Final[int] = 0 
 
     def __init__(self)-> None:
         """__init__ constructor"""
         super().__init__()
 
-        self.winning_score = game_constants.WINNING_SCORE
+        self._winning_score = game_constants.WINNING_SCORE
         self.winner_message: str = ''
 
         self.left_paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
@@ -27,19 +27,19 @@ class GamePlay(BaseState):
                                 game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
         self.ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
 
-        self.left_player_color = game_constants.LEFT_PLAYER_COLOR
-        self.right_player_color = game_constants.RIGHT_PLAYER_COLOR
+        self._left_player_color = game_constants.LEFT_PLAYER_COLOR
+        self._right_player_color = game_constants.RIGHT_PLAYER_COLOR
 
     @classmethod
     def _set_player_score(cls, **kwargs)-> None:
         """This method sets the player(s) score based on the **kwargs that are being passed"""
         if kwargs.get('reset_players_score'):
-            cls._left_player_score, cls._right_player_score = 0, 0
+            cls.left_player_score, cls.right_player_score = 0, 0
         else:
             if kwargs.get('left_player'):
-                cls._left_player_score += 1
+                cls.left_player_score += 1
             else:
-                cls._right_player_score += 1
+                cls.right_player_score += 1
 
     def handle_paddle_movement(self)-> None:
         """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
@@ -75,10 +75,10 @@ class GamePlay(BaseState):
         goal_text = pyfiglet.figlet_format('Goal', font='isometric2')
 
         if self.ball.x > self.window_width:
-            print(colored(goal_text, self.left_player_color))
+            print(colored(goal_text, self._left_player_color))
             self._set_player_score(left_player=True)
         elif self.ball.x < 0:
-            print(colored(goal_text, self.right_player_color))
+            print(colored(goal_text, self._right_player_color))
             self._set_player_score()
 
         if self.ball.x > self.window_width or self.ball.x < 0:
@@ -87,8 +87,8 @@ class GamePlay(BaseState):
             self.right_paddle.reset()
 
     def winner_handling(self)-> None:
-        if self._left_player_score == self.winning_score or self._right_player_score == self.winning_score:
-            self.winner_message = "Left Player Won!" if self._left_player_score == self.winning_score else "Right Player Won!"
+        if self.left_player_score == self._winning_score or self.right_player_score == self._winning_score:
+            self.winner_message = "Left Player Won!" if self.left_player_score == self._winning_score else "Right Player Won!"
             self.persist["winner_message"] = self.winner_message
             self._set_player_score(reset_players_score=True)
             self.next_state: str = "GAME_OVER"
@@ -105,8 +105,8 @@ class GamePlay(BaseState):
                         "left_paddle": self.left_paddle,
                         "right_paddle": self.right_paddle,
                         "ball": self.ball,
-                        "left_player_score": self._left_player_score,
-                        "right_player_score": self._right_player_score
+                        "left_player_score": self.left_player_score,
+                        "right_player_score": self.right_player_score
                     }
                 )
                 self.done = True
@@ -121,8 +121,8 @@ class GamePlay(BaseState):
         """This method acts as an util to the main draw method, in order to abstract the behaviour within it"""
         self.score_font = pygame.font.Font(os.path.join(self.assets_dir, os.listdir(self.assets_dir)[0]), game_constants.SCORE_FONT_SIZE)
 
-        left_score_text = self.score_font.render('{}'.format(self._left_player_score), True, game_constants.WHITE)
-        right_score_text = self.score_font.render('{}'.format(self._right_player_score), True, game_constants.WHITE)
+        left_score_text = self.score_font.render('{}'.format(self.left_player_score), True, game_constants.WHITE)
+        right_score_text = self.score_font.render('{}'.format(self.right_player_score), True, game_constants.WHITE)
 
         surface.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
         surface.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
@@ -142,7 +142,7 @@ class GamePlay(BaseState):
         for paddle in [self.left_paddle, self.right_paddle]:
             paddle.draw(surface, paddle_position = 'left' if paddle == self.left_paddle else 'right')
 
-        self.left_score_text = self.score_font.render('{}'.format(self._left_player_score), True, game_constants.WHITE)
-        self.right_score_text = self.score_font.render('{}'.format(self._right_player_score), True, game_constants.WHITE)
+        self.left_score_text = self.score_font.render('{}'.format(self.left_player_score), True, game_constants.WHITE)
+        self.right_score_text = self.score_font.render('{}'.format(self.right_player_score), True, game_constants.WHITE)
 
         self.ball.draw(surface)
