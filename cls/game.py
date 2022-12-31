@@ -1,8 +1,18 @@
 import pygame
 import extra_files.game_constants as game_constants
 
+from cls.paddle import Paddle
+from cls.ball import Ball
 
-class Game:
+
+class GameElements:
+    _left_paddle: Paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
+    _right_paddle: Paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
+                                game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
+    _ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
+
+
+class GameStatesHandler:
     def __init__(self, screen: pygame.Surface, states: dict, start_state: str)-> None:
         """__init__ constructor"""
         self.screen = screen
@@ -48,6 +58,7 @@ class Game:
             self.event_loop()
 
             if self.state_name == "GAMEPLAY":
+                self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
                 self.state.handle_paddle_movement()
                 self.state.ball.move()
                 self.state.handle_collision()
