@@ -13,7 +13,10 @@ from cls.ball import Ball
 
 class GamePlay(BaseState):
     left_player_score : Final[int] = 0
-    right_player_score : Final[int] = 0 
+    right_player_score : Final[int] = 0
+    left_paddle: None = None
+    right_paddle: None = None
+    ball: None = None
 
     def __init__(self)-> None:
         """__init__ constructor"""
@@ -22,13 +25,14 @@ class GamePlay(BaseState):
         self._winning_score = game_constants.WINNING_SCORE
         self.winner_message: str = ''
 
-        self.left_paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
-        self.right_paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
-                                game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
-        self.ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
-
         self._left_player_color = game_constants.LEFT_PLAYER_COLOR
         self._right_player_color = game_constants.RIGHT_PLAYER_COLOR
+
+    @classmethod
+    def set_game_elements(cls, left_paddle: Paddle, right_paddle: Paddle, ball: Ball):
+        cls.left_paddle = left_paddle
+        cls.right_paddle = right_paddle
+        cls.ball = ball
 
     @classmethod
     def _set_player_score(cls, **kwargs)-> None:
@@ -139,10 +143,11 @@ class GamePlay(BaseState):
         self._draw_score(surface)
         self._draw_divider(surface)
 
-        for paddle in [self.left_paddle, self.right_paddle]:
-            paddle.draw(surface, paddle_position = 'left' if paddle == self.left_paddle else 'right')
+        if self.left_paddle and self.right_paddle and self.ball:
+            for paddle in [self.left_paddle, self.right_paddle]:
+                paddle.draw(surface, paddle_position = 'left' if paddle == self.left_paddle else 'right')
+            
+            self.ball.draw(surface)
 
         self.left_score_text = self.score_font.render('{}'.format(self.left_player_score), True, game_constants.WHITE)
         self.right_score_text = self.score_font.render('{}'.format(self.right_player_score), True, game_constants.WHITE)
-
-        self.ball.draw(surface)
