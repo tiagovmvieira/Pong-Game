@@ -7,7 +7,7 @@ from typing import List, Union, Final
 
 
 class Splash(BaseState):
-    _defined_color = game_constants.DEFINED_COLOR
+    _defined_color: list = game_constants.DEFINED_COLOR
 
     def __init__(self)-> None:
         """__init__ constructor"""
