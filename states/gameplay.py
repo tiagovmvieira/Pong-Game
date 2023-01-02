@@ -12,8 +12,8 @@ from cls.paddle import Paddle
 from cls.ball import Ball
 
 class GamePlay(BaseState):
-    left_player_score : Final[int] = 0
-    right_player_score : Final[int] = 0
+    left_player_score: None = None
+    right_player_score: None = None
     left_paddle: None = None
     right_paddle: None = None
     ball: None = None
@@ -29,10 +29,17 @@ class GamePlay(BaseState):
         self._right_player_color = game_constants.RIGHT_PLAYER_COLOR
 
     @classmethod
-    def set_game_elements(cls, left_paddle: Paddle, right_paddle: Paddle, ball: Ball):
+    def set_game_elements(cls, left_paddle: Paddle, right_paddle: Paddle, ball: Ball)-> None:
+        """This class allocates on the left_paddle, right_paddle and ball cls variables the corresponding GameElements objects"""
         cls.left_paddle = left_paddle
         cls.right_paddle = right_paddle
         cls.ball = ball
+
+    @classmethod
+    def set_game_initial_score(cls, left_player_score: int, right_player_score: int)-> None:
+        """This class allocates on the left_player_score and right_player_score cls variables the corresponding GameInformation variables"""
+        cls.left_player_score = left_player_score
+        cls.right_player_score = right_player_score
 
     @classmethod
     def _set_player_score(cls, **kwargs)-> None:
