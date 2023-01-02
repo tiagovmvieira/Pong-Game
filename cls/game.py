@@ -3,6 +3,13 @@ import extra_files.game_constants as game_constants
 
 from cls.paddle import Paddle
 from cls.ball import Ball
+from typing import Final
+
+from states.base import BaseState
+
+class GameInformation:
+    _left_player_score: Final[int] = 0
+    _right_player_score: Final[int] = 0
 
 
 class GameElements:
@@ -18,6 +25,7 @@ class GameStatesHandler:
         self.screen = screen
         self.states = states
         self.state_name = start_state
+        self.previous_state = None
 
         self.done = False
         self.clock = pygame.time.Clock()
@@ -29,15 +37,24 @@ class GameStatesHandler:
         for event in pygame.event.get():
             self.state.get_event(event)
 
+    def _set_previous_state(self, previous_state):
+        """This method stores the previous state of the game into an atribute variable"""
+        self.previous_state = previous_state
+
     def flip_state(self)-> None:
         """This function flips the state assumed on the game"""
-        current_state = self.state_name
+        self._set_previous_state(self.state_name)
+
         next_state = self.state.next_state
         self.state.done = False
         self.state_name = next_state
         persistent = self.state.persist
         self.state = self.states.get(self.state_name, None)
         self.state.startup(persistent)
+
+        if self.state_name == "GAMEPLAY":
+            if self.previous_state == "MENU":
+                self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
 
     def update(self, dt: int)-> None:
         """This function updates.."""
@@ -58,7 +75,6 @@ class GameStatesHandler:
             self.event_loop()
 
             if self.state_name == "GAMEPLAY":
-                self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
                 self.state.handle_paddle_movement()
                 self.state.ball.move()
                 self.state.handle_collision()
