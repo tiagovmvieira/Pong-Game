@@ -37,7 +37,7 @@ class GamePlay(BaseState):
     @classmethod
     def _set_player_score(cls, **kwargs)-> None:
         """This method sets the player(s) score based on the **kwargs that are being passed"""
-        if kwargs.get('reset_players_score'):
+        if kwargs.get('reset_players_score', False):
             cls.left_player_score, cls.right_player_score = 0, 0
         else:
             if kwargs.get('left_player'):
