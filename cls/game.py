@@ -55,6 +55,7 @@ class GameStatesHandler:
         if self.state_name == "GAMEPLAY":
             if self.previous_state == "MENU":
                 self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
+                self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
 
     def update(self, dt: int)-> None:
         """This function updates.."""
