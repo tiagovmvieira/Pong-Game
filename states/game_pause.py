@@ -12,12 +12,8 @@ class GamePause(BaseState):
         super().__init__()
         self.game_pause_font = pygame.font.Font(os.path.join(self.assets_dir, os.listdir(self.assets_dir)[0]), 20)
 
-        self.pause_menu_options = {
-            0: "A",
-            1: "B",
-            2: "C",
-            3: "D"
-        }
+        self.active_index: int = 0
+        self.pause_menu_options: list = ["Resume", "Quit"]
 
         self.rect_box = pygame.Rect(0, 0, 500, 75)
         self.rect_box.center = (self.window_width // 2, self.window_height // 2 + 150)
@@ -35,13 +31,36 @@ class GamePause(BaseState):
     def update(self, dt: int)-> None:
         pass
 
+    def _handle_action(self):
+        """This methosd handles the action concerning state flip based on the active index"""
+        if self.active_index == 0:
+            self.persist.clear()
+            self.next_state = "GAMEPLAY"
+            self.done = True
+        elif self.active_index == 1:
+            self.persist.clear()
+            self.quit = True
+
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self.quit = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                self.persist.clear()
-                self.done = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                self.active_index = 1 if self.active_index <= 0 else 0
+            elif event.key == pygame.K_LEFT:
+                self.active_index = 0 if self.active_index >= 1 else 1
+            elif event.key == pygame.K_RETURN:
+                self._handle_action()            
+
+    def _render_text(self, index: int)-> pygame.Surface:
+        """This method renders the text grabbed through the index on the options attribute and returns the Pygame Surface"""
+        color = game_constants.BLUE if index == self.active_index else game_constants.BLACK
+        return self.game_pause_font.render(self.pause_menu_options[index], True, color)
+
+    def _get_text_position(self, text, index)-> tuple:
+        """This method computes and returns the text center position"""
+        center = (self.rect_box_obj.center[0] + (-100 if index == 0 else + 100), self.rect_box_obj.center[1])
+        return text.get_rect(center=center)
 
     def _draw_elements_from_gameplay_state(self, surface: pygame.Surface)-> None:
         """This method acts as an util to the main draw method, in order to abtract the behaviour within it"""
@@ -84,3 +103,7 @@ class GamePause(BaseState):
         self.text_rect_pause = self.pause_message.get_rect(center=(self.rect_box_obj.center[0], self.rect_box_obj.center[1]- 20))
         
         surface.blit(self.pause_message, self.text_rect_pause)
+
+        for index, option in enumerate(self.pause_menu_options):
+            text_render = self._render_text(index)
+            surface.blit(text_render, self._get_text_position(text_render, index))
