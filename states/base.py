@@ -14,6 +14,7 @@ class BaseState(ABC):
         self.window_height = game_constants.WINDOW_HEIGHT
 
         self.done: bool = False
+        self.resume: bool = False
         self.quit: bool = False
         self.next_state: str = ''
         self.screen_rect = pygame.display.get_surface().get_rect()
@@ -25,6 +26,7 @@ class BaseState(ABC):
     def startup(self, persistent):
         """This method sets the persistent data between states, thus allowing data diffusion through the game states"""
         self.persist = persistent
+        self.resume = False
 
     @abstractmethod
     def get_event(self, event: pygame.event.Event, keys: pygame.key.ScancodeWrapper):
