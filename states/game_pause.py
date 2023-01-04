@@ -13,7 +13,7 @@ class GamePause(BaseState):
         self.game_pause_font = pygame.font.Font(os.path.join(self.assets_dir, os.listdir(self.assets_dir)[0]), 20)
 
         self.active_index: int = 0
-        self.pause_menu_options: list = ["Resume", "Quit"]
+        self.pause_menu_options: list = ["Resume", "Quit", "Restart"]
 
         self.rect_box = pygame.Rect(0, 0, 500, 75)
         self.rect_box.center = (self.window_width // 2, self.window_height // 2 + 150)
@@ -33,19 +33,29 @@ class GamePause(BaseState):
         """This methosd handles the action concerning state flip based on the active index"""
         if self.active_index == 0:
             self.persist.clear()
-            self.next_state: Final[str] = "GAMEPLAY"
+            self.next_state: str = "GAMEPLAY"
             self.done = True
         elif self.active_index == 1:
             self.quit = True
+        elif self.active_index == 2:
+            self.persist.clear()
+            self.next_state: str = "GAMEPLAY"
+            self.done = True
 
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self.quit = True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
-                self.active_index = 1 if self.active_index <= 0 else 0
+                if self.active_index in [0, 1]:
+                    self.active_index += 1
+                else:
+                    self.active_index = 0
             elif event.key == pygame.K_LEFT:
-                self.active_index = 0 if self.active_index >= 1 else 1
+                if self.active_index in [1, 2]:
+                    self.active_index -= 1
+                else:
+                    self.active_index = 2
             elif event.key == pygame.K_RETURN:
                 self._handle_action()            
 
@@ -56,7 +66,13 @@ class GamePause(BaseState):
 
     def _get_text_position(self, text, index)-> tuple:
         """This method computes and returns the text center position"""
-        center = (self.rect_box_obj.center[0] + (-100 if index == 0 else + 100), self.rect_box_obj.center[1])
+        if index == 0:
+            center = (self.rect_box_obj.center[0] - 100 - (text.get_width() / 2), self.rect_box_obj.center[1])
+        elif index == 1:
+            center = (self.rect_box_obj.center[0], self.rect_box_obj.center[1])
+        else:
+            center = (self.rect_box_obj.center[0] + (text.get_width() / 2) + 100, self.rect_box_obj.center[1])
+
         return text.get_rect(center=center)
 
     def _draw_elements_from_gameplay_state(self, surface: pygame.Surface)-> None:
