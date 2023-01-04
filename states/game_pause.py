@@ -34,6 +34,7 @@ class GamePause(BaseState):
         if self.active_index == 0:
             self.persist.clear()
             self.next_state: str = "GAMEPLAY"
+            self.resume = True
             self.done = True
         elif self.active_index == 1:
             self.quit = True
