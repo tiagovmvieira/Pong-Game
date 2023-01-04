@@ -41,6 +41,12 @@ class GameStatesHandler:
         """This method stores the previous state of the game into an atribute variable"""
         self.previous_state = previous_state
 
+    def _bootstrap_gameplay_state(self)-> None:
+        """This method includes the gameplay state bootstrap logic"""
+        self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
+        self.state.set_initial_positions()
+        self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
+
     def flip_state(self)-> None:
         """This function flips the state assumed on the game"""
         self._set_previous_state(self.state_name)
@@ -53,9 +59,9 @@ class GameStatesHandler:
         self.state.startup(persistent)
 
         if self.state_name == "GAMEPLAY":
-            if self.previous_state == "MENU":
-                self.state.set_game_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
-                self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
+            if self.previous_state in ["MENU", "GAME_PAUSE"]:
+                pygame.time.wait(300) if self.previous_state == "GAME_PAUSE" else None
+                self._bootstrap_gameplay_state()
 
     def update(self, dt: int)-> None:
         """This function updates.."""
