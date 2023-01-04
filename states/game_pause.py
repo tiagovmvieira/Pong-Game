@@ -26,8 +26,6 @@ class GamePause(BaseState):
                                         (self.window_height * 3 // 4 - self.backspace_message.get_height() // 2)
                                         )
 
-        self.next_state: Final[str] = "GAMEPLAY"
-
     def update(self, dt: int)-> None:
         pass
 
@@ -35,10 +33,9 @@ class GamePause(BaseState):
         """This methosd handles the action concerning state flip based on the active index"""
         if self.active_index == 0:
             self.persist.clear()
-            self.next_state = "GAMEPLAY"
+            self.next_state: Final[str] = "GAMEPLAY"
             self.done = True
         elif self.active_index == 1:
-            self.persist.clear()
             self.quit = True
 
     def get_event(self, event: pygame.event.Event)-> None:
