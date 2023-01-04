@@ -30,7 +30,7 @@ class GameStatesHandler:
         self.done = False
         self.clock = pygame.time.Clock()
         self.fps = game_constants.FPS
-        self.state = self.states.get(self.state_name, None)
+        self.state: BaseState = self.states.get(self.state_name, None)
 
     def event_loop(self)-> None:
         """This function handles the game event loop"""
