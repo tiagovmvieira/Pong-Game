@@ -52,6 +52,12 @@ class GamePlay(BaseState):
             else:
                 cls.right_player_score += 1
 
+    @classmethod
+    def set_initial_positions(cls):
+        cls.left_paddle.reset()
+        cls.right_paddle.reset()
+        cls.ball.reset()
+
     def handle_paddle_movement(self)-> None:
         """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
         keys = pygame.key.get_pressed()
