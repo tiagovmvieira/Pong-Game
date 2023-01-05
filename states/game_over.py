@@ -7,7 +7,7 @@ from typing import Final
 
 
 class GameOver(BaseState):
-    _time_active_threshold: int = 10000
+    _time_active_threshold: Final[int] = 10000
 
     def __init__(self)-> None:
         """__init__ constructor"""
@@ -25,7 +25,7 @@ class GameOver(BaseState):
 
         self._time_active: Final[int] = 0
 
-    def reset_time_active(self)-> None:
+    def _reset_time_active(self)-> None:
         self._time_active = 0
 
     def _generate_time_active_message(self)-> None:
@@ -48,6 +48,7 @@ class GameOver(BaseState):
         self._update_winner_message()
         self._generate_time_active_message()
         if self._time_active >= self._time_active_threshold:
+            self.persist.clear()
             self.quit = True
 
     def get_event(self, event: pygame.event.Event)-> None:
@@ -56,7 +57,7 @@ class GameOver(BaseState):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_y:
                 self.next_state: str = "GAMEPLAY"
-                self.reset_time_active()
+                self._reset_time_active()
                 self.persist.clear()
                 self.done = True
             elif event.key == pygame.K_n:
