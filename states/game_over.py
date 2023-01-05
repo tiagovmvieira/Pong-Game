@@ -7,7 +7,7 @@ from typing import Final
 
 
 class GameOver(BaseState):
-    _time_active_threshold: Final[int] = 10000
+    _time_active_threshold: Final[int] = game_constants.GAME_OVER_ACTIVE_THRESHOLD
 
     def __init__(self)-> None:
         """__init__ constructor"""
