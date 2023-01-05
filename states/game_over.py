@@ -30,7 +30,8 @@ class GameOver(BaseState):
 
     def _generate_time_active_message(self)-> None:
         """This method generates the time active message block message to be draw"""
-        self.time_active_message = self.close_font.render('{}'.format(10 - (self._time_active // 1000)), True, game_constants.WHITE)
+        self.time_active_message = self.close_font.render('{}'.format((self._time_active_threshold - self._time_active) * 1 // 1000), True,\
+                                                        game_constants.WHITE)
         self.text_rect_active = self.time_active_message.get_rect()
         self.text_rect_active.center = (self.window_width // 2 - self.time_active_message.get_width() // 2,
                                     (self.window_height * 6 // 10 - self.time_active_message.get_height() // 2)
