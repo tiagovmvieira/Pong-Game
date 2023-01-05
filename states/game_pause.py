@@ -7,7 +7,7 @@ from typing import Final
 
 
 class GamePause(BaseState):
-    _time_active_threshold: Final[int] = 10000
+    _time_active_threshold: Final[int] = 15000
 
     def __init__(self)-> None:
         """__init__ constructor"""
@@ -21,20 +21,22 @@ class GamePause(BaseState):
         self.rect_box.center = (self.window_width // 2, self.window_height // 2 + 150)
 
         self.pause_message = self.game_pause_font.render('Game Paused', True, game_constants.BLACK)
-
-        self.backspace_message = self.game_pause_font.render('Press BACKSPACE to resume', True, game_constants.WHITE)
-        self.text_rect_backspace = self.pause_message.get_rect()
-        self.text_rect_backspace.center = (self.window_width // 2 - self.backspace_message.get_width() // 2,
-                                        (self.window_height * 3 // 4 - self.backspace_message.get_height() // 2)
-                                        )
-
         self._time_active: Final[int] = 0
+
+    def _generate_time_active_message(self)-> None:
+        """This method generates the time active message block to be draw"""
+        self.time_active_message = self.game_pause_font.render('{}'.format((self._time_active_threshold - self._time_active) * 1 // 1000),\
+                                                                        True, game_constants.BLACK)
+
+        self.text_rect_active = self.time_active_message.get_rect(center = ((self.window_width // 2) - 225, (self.window_height // 2) + 160)
+                                                                )
 
     def _reset_time_active(self)-> None:
         self._time_active = 0
 
     def update(self, dt: int)-> None:
         self._time_active += dt #dt in miliseconds
+        self._generate_time_active_message()
 
         if self._time_active >= self._time_active_threshold:
             # no clearance of the self.persist attribute variable
@@ -131,7 +133,8 @@ class GamePause(BaseState):
         self.text_rect_pause = self.pause_message.get_rect(center=(self.rect_box_obj.center[0], self.rect_box_obj.center[1]- 20))
         
         surface.blit(self.pause_message, self.text_rect_pause)
+        surface.blit(self.time_active_message, self.text_rect_active.center)
 
         for index, option in enumerate(self.pause_menu_options):
             text_render = self._render_text(index)
-            surface.blit(text_render, self._get_text_position(text_render, index))
+            surface.blit(text_render, self._get_text_position(text_render, index))        
