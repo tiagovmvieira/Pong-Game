@@ -7,6 +7,8 @@ from typing import Final
 
 
 class GamePause(BaseState):
+    _time_active_threshold: Final[int] = 10000
+
     def __init__(self)-> None:
         """__init__ constructor"""
         super().__init__()
@@ -26,11 +28,23 @@ class GamePause(BaseState):
                                         (self.window_height * 3 // 4 - self.backspace_message.get_height() // 2)
                                         )
 
-    def update(self, dt: int)-> None:
-        pass
+        self._time_active: Final[int] = 0
 
-    def _handle_action(self):
-        """This methosd handles the action concerning state flip based on the active index"""
+    def _reset_time_active(self)-> None:
+        self._time_active = 0
+
+    def update(self, dt: int)-> None:
+        self._time_active += dt #dt in miliseconds
+
+        if self._time_active >= self._time_active_threshold:
+            # no clearance of the self.persist attribute variable
+            self._reset_time_active()
+            self.next_state: str = "GAMEPLAY"
+            self.resume = True
+            self.done = True
+
+    def _handle_action(self)-> None:
+        """This method handles the action concerning state flip based on the active index"""
         if self.active_index == 0:
             self.persist.clear()
             self.next_state: str = "GAMEPLAY"
