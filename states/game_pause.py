@@ -7,7 +7,7 @@ from typing import Final
 
 
 class GamePause(BaseState):
-    _time_active_threshold: Final[int] = 15000
+    _time_active_threshold: Final[int] = game_constants.GAME_PAUSE_ACTIVE_THRESHOLD
 
     def __init__(self)-> None:
         """__init__ constructor"""
