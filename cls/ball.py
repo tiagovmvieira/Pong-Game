@@ -57,18 +57,16 @@ class Ball():
         self.x += self.x_vel
         self.y += self.y_vel
 
-    def change_direction(self, paddle: Optional[Paddle] = None, up_boundary_collision: Optional[bool] = False,
-                        down_boundary_collision: Optional[bool] = False, left_paddle_collision: Optional[bool] = False,
-                        right_paddle_collision: Optional[bool] = False)-> None:
+    def change_direction(self, paddle: Optional[Paddle] = None, **kwargs: Optional[bool])-> None:
         """This method handles the ball's change of direction behaviour"""
-        if up_boundary_collision or down_boundary_collision:
-            self._set_revertion_vel(y_direction= True)
-        elif left_paddle_collision:
+        if kwargs.get('up_boundary_collision', False) or kwargs.get('down_boundary_collision', False):
+            self._set_revertion_vel(y_direction=True)
+        elif kwargs.get('left_paddle_collision', False):
             if self.y >= paddle.y and self.y <= paddle.y + paddle.height:
                 if self.x - self.radius <= paddle.x + paddle.width:
                     self._set_revertion_vel(x_direction = True)
                     self._set_y_vel_after_paddle_collision(paddle)
-        elif right_paddle_collision:
+        elif kwargs.get('right_paddle_collision', False):
             if self.y >= paddle.y and self.y <= paddle.y + paddle.height:
                 if self.x + self.radius >= paddle.x:
                     self._set_revertion_vel(x_direction = True)
