@@ -53,13 +53,14 @@ class GamePlay(BaseState):
                 cls.right_player_score += 1
 
     @classmethod
-    def set_initial_positions(cls):
+    def set_initial_positions(cls)-> None:
+        """This method sets the initial positions of the game elements (left_paddle, right_paddle, and ball)"""
         cls.left_paddle.reset()
         cls.right_paddle.reset()
         cls.ball.reset()
 
     def handle_paddle_movement(self)-> None:
-        """This method handle the paddle movement based on the keys that are being pressed on the keyboard"""
+        """This method handles the paddle movement based on the keys that are being pressed on the keyboard"""
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w] and self.left_paddle.y > 0:
@@ -75,9 +76,9 @@ class GamePlay(BaseState):
         """This method handles ball collisions with field horizontal boundaries and paddles"""
         # collision with the field horizontal boundaries
         if self.ball.y + self.ball.radius >= self.window_height: #down (y)
-            self.ball.change_direction(down_boundary_collision = True)
+            self.ball.change_direction(down_boundary_collision=True)
         elif (self.ball.y - self.ball.radius <= 0): #up (y)
-            self.ball.change_direction(up_boundary_collision = True)
+            self.ball.change_direction(up_boundary_collision=True)
 
         # paddle collision:
         if self.ball.x_vel < 0:
@@ -104,6 +105,7 @@ class GamePlay(BaseState):
             self.right_paddle.reset()
 
     def winner_handling(self)-> None:
+        """This method handles the winner event proceedings (winner message re-declaration, players' score reset, and next state migration"""
         if self.left_player_score == self._winning_score or self.right_player_score == self._winning_score:
             self.winner_message = "Left Player Won!" if self.left_player_score == self._winning_score else "Right Player Won!"
             self.persist["winner_message"] = self.winner_message
