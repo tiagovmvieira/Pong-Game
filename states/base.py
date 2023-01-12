@@ -5,6 +5,8 @@ import extra_files.game_constants as game_constants
 from abc import ABC, abstractmethod
 
 class BaseState(ABC):
+    assets_dir = os.path.join(os.getcwd(), 'assets')
+
     def __init__(self)-> None:
         """__init__ constructor"""
         if self.__class__ == BaseState:
@@ -19,9 +21,6 @@ class BaseState(ABC):
         self.next_state: str = ''
         self.screen_rect = pygame.display.get_surface().get_rect()
         self.persist: dict = {}
-
-        self._root_dir = os.getcwd()
-        self.assets_dir = os.path.join(self._root_dir, 'assets')
 
     def startup(self, persistent):
         """This method sets the persistent data between states, thus allowing data diffusion through the game states"""
