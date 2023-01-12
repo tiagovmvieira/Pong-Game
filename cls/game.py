@@ -1,11 +1,14 @@
 import pygame
 import extra_files.game_constants as game_constants
+import os
 
 from cls.paddle import Paddle
 from cls.ball import Ball
+from cls.button import Button
 from typing import Final
 
 from states.base import BaseState
+from states.menu import Menu
 
 class GameInformation:
     _left_player_score: Final[int] = 0
@@ -18,6 +21,13 @@ class GameElements:
                                 game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
     _ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
 
+
+class MenuElements:
+    _menu_font = Menu.get_menu_font()
+    _start_game_button = Button('Start Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+                            _menu_font)
+    _quit_game_button = Button('Quit Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
+                            _menu_font)
 
 class GameStatesHandler:
     def __init__(self, screen: pygame.Surface, states: dict, start_state: str)-> None:
@@ -51,6 +61,10 @@ class GameStatesHandler:
         self.state.set_initial_positions()
         self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
 
+    def _bootstrap_menu_state(self)-> None:
+        """This method includes the menu state bootstrap logic"""
+        self.state.set_menu_elements(MenuElements._start_game_button, MenuElements._quit_game_button)
+
     def flip_state(self)-> None:
         """This function flips the state assumed on the game"""
         self._set_previous_state(self.state_name)
@@ -67,6 +81,8 @@ class GameStatesHandler:
             if self.previous_state in ["MENU", "GAME_PAUSE"] and not self.previous_state_resume:
                 pygame.time.wait(300) if self.previous_state == "GAME_PAUSE" else None
                 self._bootstrap_gameplay_state()
+        elif self.state_name == "MENU":
+            self._bootstrap_menu_state()
 
     def update(self, dt: int)-> None:
         """This function updates.."""
