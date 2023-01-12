@@ -21,7 +21,7 @@ class Button:
         screen.blit(self.text_surface, self.text_rect)
         self.check_click()
 
-    def check_click(self):
+    def check_click(self)-> bool:
         """This method checks if the button was clicked"""
         mouse_position: tuple = pygame.mouse.get_pos()
 
@@ -31,7 +31,8 @@ class Button:
                 self.pressed = True
             else:
                 if self.pressed == True:
-                    print("click")
                     self.pressed = False
         else:
             self.top_rectangle_color = "#475F77"
+
+        return self.pressed
