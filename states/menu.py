@@ -47,9 +47,9 @@ class Menu(BaseState):
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self.quit = True
-        elif self.start_game_button.check_click():
+        elif self.start_game_button.dynamic_elevation == 0 and not self.start_game_button.check_click():
             self._handle_action(start_game=True)
-        elif self.quit_game_button.check_click():
+        elif self.quit_game_button.dynamic_elevation == 0 and not self.quit_game_button.check_click():
             self._handle_action()
 
     def update(self, dt: int)-> None:
