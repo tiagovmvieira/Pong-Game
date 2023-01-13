@@ -1,6 +1,5 @@
 import pygame
 import extra_files.game_constants as game_constants
-import os
 
 from cls.paddle import Paddle
 from cls.ball import Ball
