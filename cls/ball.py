@@ -6,7 +6,7 @@ import extra_files.game_constants as game_constants
 from cls.paddle import Paddle
 from typing import Optional
 
-class Ball():
+class Ball:
     def __init__(self, x: float, y: float, radius: float = game_constants.BALL_RADIUS)-> None:
         """__init__ constructor"""
         self.x = self.original_x = x
@@ -58,17 +58,19 @@ class Ball():
         self.y += self.y_vel
 
     def change_direction(self, paddle: Optional[Paddle] = None, **kwargs: Optional[bool])-> None:
-        """This method handles the ball's change of direction behaviour"""
+        """This method handles the ball's change of direction behaviour. The Paddle object is function of the ball x_vel signal"""
         if kwargs.get('up_boundary_collision', False) or kwargs.get('down_boundary_collision', False):
             self._set_revertion_vel(y_direction=True)
         elif kwargs.get('left_paddle_collision', False):
             if self.y >= paddle.y and self.y <= paddle.y + paddle.height:
-                if self.x - self.radius <= paddle.x + paddle.width:
+                if self.x - self.radius <= paddle.x + paddle.width: # left paddle hit
+                    paddle._increase_number_of_touches()
                     self._set_revertion_vel(x_direction = True)
                     self._set_y_vel_after_paddle_collision(paddle)
         elif kwargs.get('right_paddle_collision', False):
-            if self.y >= paddle.y and self.y <= paddle.y + paddle.height:
-                if self.x + self.radius >= paddle.x:
+            if self.y >= paddle.y and self.y <= paddle.y + paddle.height: 
+                if self.x + self.radius >= paddle.x: # right paddle hit
+                    paddle._increase_number_of_touches()
                     self._set_revertion_vel(x_direction = True)
                     self._set_y_vel_after_paddle_collision(paddle)
 
