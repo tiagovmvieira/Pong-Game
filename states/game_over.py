@@ -52,17 +52,24 @@ class GameOver(BaseState):
             self.persist.clear()
             self.quit = True
 
+    def _handle_action(self, **kwargs)-> None:
+        """This method handles the action to proceed in based on the fed kwargs from the get_event method"""
+        if kwargs.get("play_again", False):
+            self.next_state: str = "GAMEPLAY"
+            self._reset_time_active()
+            self.persist.clear()
+            self.done = True
+        else:
+            self.quit = True
+
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
-            self.quit = True
+            self._handle_action()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_y:
-                self.next_state: str = "GAMEPLAY"
-                self._reset_time_active()
-                self.persist.clear()
-                self.done = True
+                self._handle_action(play_again=True)
             elif event.key == pygame.K_n:
-                self.quit = True
+                self._handle_action()
 
     def draw(self, surface: pygame.Surface)-> None:
         surface.fill(game_constants.PURE_BLACK)
