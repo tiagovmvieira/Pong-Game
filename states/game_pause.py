@@ -49,6 +49,7 @@ class GamePause(BaseState):
         """This method handles the action concerning state flip based on the active index"""
         if self.active_index == 0:
             self.persist.clear()
+            self._reset_time_active()
             self.next_state: str = "GAMEPLAY"
             self.resume = True
             self.done = True
@@ -56,6 +57,7 @@ class GamePause(BaseState):
             self.quit = True
         elif self.active_index == 2:
             self.persist.clear()
+            self._reset_time_active()
             self.next_state: str = "GAMEPLAY"
             self.done = True
 
