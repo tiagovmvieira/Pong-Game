@@ -102,14 +102,11 @@ class GamePause(BaseState):
             paddle.draw(surface, paddle_position = 'left' if paddle == left_paddle else 'right')
 
         # ball
-        ball = self.persist.get("ball", None)
+        ball = self.persist.get("ball")
         ball.draw(surface)
 
         # divider
-        for i in range(10, self.window_height, self.window_height // 20):
-            if (i % 2) == 1: #odd i?
-                continue
-            pygame.draw.rect(surface, game_constants.WHITE, (self.window_width // 2 - 5, i, 10, self.window_height / 20))
+        pygame.draw.aaline(surface, game_constants.WHITE, (self.window_width / 2, 0), (self.window_width / 2, self.window_height), blend=1)
 
         # score
         left_player_score = self.persist.get("left_player_score", None)
@@ -120,8 +117,14 @@ class GamePause(BaseState):
         left_score_text = score_font.render('{}'.format(left_player_score), True, game_constants.WHITE)
         right_score_text = score_font.render('{}'.format(right_player_score), True, game_constants.WHITE)
     
-        surface.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
-        surface.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
+        surface.blit(left_score_text,
+                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (ball.radius) - 2 * 15,
+                    (self.window_height / 2) - (left_score_text.get_height() / 2))
+                    )
+        surface.blit(right_score_text,
+                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (ball.radius) + 15,
+                    (self.window_height / 2) - (right_score_text.get_height() / 2))
+                    )
 
     def draw(self, surface: pygame.Surface)-> None:
         surface.fill(game_constants.PURE_BLACK)
