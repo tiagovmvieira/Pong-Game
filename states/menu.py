@@ -37,16 +37,16 @@ class Menu(BaseState):
         center = (self.screen_rect.center[0], self.screen_rect.center[1] + (index * 50))
         return text.get_rect(center=center)
 
-    def _handle_action(self, start_game: bool = False)-> None:
+    def _handle_action(self, **kwargs)-> None:
         """This method handles the action concerning state flip based on the active index"""
-        if start_game:
+        if kwargs.get('start_game', False):
             self.done = True
         else:
             self.quit = True
 
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
-            self.quit = True
+            self._handle_action()
         elif self.start_game_button.dynamic_elevation == 0 and not self.start_game_button.check_click():
             self._handle_action(start_game=True)
         elif self.quit_game_button.dynamic_elevation == 0 and not self.quit_game_button.check_click():
