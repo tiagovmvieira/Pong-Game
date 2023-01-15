@@ -113,13 +113,11 @@ class GamePlay(BaseState):
             self.next_state: str = "GAME_OVER"
             self.done = True
 
-    def get_event(self, event: pygame.event.Event)-> None:
-        if event.type == pygame.QUIT:
-            self.quit = True
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                self.next_state: str = "GAME_PAUSE"
-                self.persist.update(
+    def _handle_action(self, **kwargs)-> None:
+        """This method handles the action to proceed in based on the fed kwargs from the get_event method"""
+        if kwargs.get("game_pause", False):
+            self.next_state: str = "GAME_PAUSE"
+            self.persist.update(
                     {
                         "left_paddle": self.left_paddle,
                         "right_paddle": self.right_paddle,
@@ -128,10 +126,16 @@ class GamePlay(BaseState):
                         "right_player_score": self.right_player_score
                     }
                 )
-                self.done = True
-            if event.key == pygame.K_m:
-                self.next_state: str = "GAME_OVER"
-                self.done = True
+            self.done = True
+        else:
+            self.quit = True
+
+    def get_event(self, event: pygame.event.Event)-> None:
+        if event.type == pygame.QUIT:
+            self._handle_action()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                self._handle_action(game_pause=True)
 
     def update(self, dt: int)-> None:
         pass
