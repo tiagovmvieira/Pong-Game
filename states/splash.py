@@ -45,6 +45,13 @@ class Splash(BaseState):
 
         return color_settings[1]
 
+    def _handle_action(self, **kwargs)-> None:
+        """This method handles the action to proceed in based on the fed kwargs from the get_event method"""
+        if kwargs.get("enter_menu"):
+            self.done = True
+        else:
+            self.quit = True
+
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self.quit = True
