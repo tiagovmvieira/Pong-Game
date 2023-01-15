@@ -143,15 +143,18 @@ class GamePlay(BaseState):
         left_score_text = self.score_font.render('{}'.format(self.left_player_score), True, game_constants.WHITE)
         right_score_text = self.score_font.render('{}'.format(self.right_player_score), True, game_constants.WHITE)
 
-        surface.blit(left_score_text, ((self.window_width // 4) - left_score_text.get_width() // 2, 20))
-        surface.blit(right_score_text, ((self.window_width // 4 + (self.window_width / 2) - right_score_text.get_width() // 2), 20))
+        surface.blit(left_score_text,
+                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (self.ball.radius) - 2 * 15,
+                    (self.window_height / 2) - (left_score_text.get_height() / 2))
+                    )
+        surface.blit(right_score_text,
+                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (self.ball.radius) + 15,
+                    (self.window_height / 2) - (right_score_text.get_height() / 2))
+                    )
 
     def _draw_divider(self, surface: pygame.Surface)-> None:
         """This method acts as an util to the main draw method, in order to abstract the behaviour within it"""
-        for i in range(10, self.window_height, self.window_height // 20):
-            if (i % 2) == 1: #odd i?
-                continue
-            pygame.draw.rect(surface, game_constants.WHITE, (self.window_width // 2 - 5, i, 10, self.window_height / 20))
+        pygame.draw.aaline(surface, game_constants.WHITE, (self.window_width / 2, 0), (self.window_width / 2, self.window_height), blend=1)
 
     def draw(self, surface: pygame.Surface)-> None:
         surface.fill(game_constants.PURE_BLACK)
