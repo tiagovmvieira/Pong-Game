@@ -4,14 +4,17 @@ import extra_files.game_constants as game_constants
 
 from .base import BaseState
 from cls.button import Button
-from typing import Final
+from cls.launcher import Launcher
+
+from typing import Final, Union
 
 
 class GameOver(BaseState):
     pygame.init()
     _time_active_threshold: Final[int] = game_constants.GAME_OVER_ACTIVE_THRESHOLD
-    play_again_button: None = None
-    quit_game_button: None = None
+    play_again_button: Union[None, Button] = None
+    quit_game_button: Union[None, Button] = None
+    launcher: Union[None, Launcher] = None
     state_font: pygame.font = pygame.font.Font(os.path.join(BaseState.assets_dir, os.listdir(BaseState.assets_dir)[0]), 20)
 
     def __init__(self)-> None:
@@ -28,10 +31,11 @@ class GameOver(BaseState):
         return cls.state_font
 
     @classmethod
-    def set_state_elements(cls, play_again_button: Button, quit_game_button: Button)-> None:
+    def set_state_elements(cls, play_again_button: Button, quit_game_button: Button, launcher: Launcher)-> None:
         """This class method allocates on class variables the corresponding objects"""
         cls.play_again_button = play_again_button
         cls.quit_game_button = quit_game_button
+        cls.launcher = launcher
 
     def _reset_time_active(self)-> None:
         """This method resets the time active instance variable"""
@@ -87,3 +91,6 @@ class GameOver(BaseState):
         if self.play_again_button and self.quit_game_button:
             self.play_again_button.draw(surface)
             self.quit_game_button.draw(surface)
+
+        if self.launcher:
+            self.launcher.draw(surface)
