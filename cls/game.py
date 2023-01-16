@@ -8,6 +8,7 @@ from typing import Final
 
 from states.base import BaseState
 from states.menu import Menu
+from states.game_over import GameOver
 
 class GameInformation:
     _left_player_score: Final[int] = 0
@@ -22,11 +23,20 @@ class GameElements:
 
 
 class MenuElements:
-    _menu_font = Menu.get_menu_font()
+    _state_font = Menu.get_state_font()
     _start_game_button = Button('Start Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
-                            _menu_font)
+                            _state_font)
     _quit_game_button = Button('Quit Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
-                            _menu_font)
+                            _state_font)
+
+
+class GameOverElements:
+    _state_font = GameOver.get_state_font()
+    _play_again_button = Button("Play Again", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+                            _state_font)
+    _quit_game_button = Button("Quit Game", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
+                            _state_font)
+
 
 class GameStatesHandler:
     def __init__(self, screen: pygame.Surface, states: dict, start_state: str)-> None:
@@ -62,7 +72,11 @@ class GameStatesHandler:
 
     def _bootstrap_menu_state(self)-> None:
         """This method includes the menu state bootstrap logic"""
-        self.state.set_menu_elements(MenuElements._start_game_button, MenuElements._quit_game_button)
+        self.state.set_state_elements(MenuElements._start_game_button, MenuElements._quit_game_button)
+
+    def _bootstrap_game_over_state(self)-> None:
+        """This method includes the game over state bootstrap logic"""
+        self.state.set_state_elements(GameOverElements._play_again_button, GameOverElements._quit_game_button)
 
     def flip_state(self)-> None:
         """This function flips the state assumed on the game"""
@@ -82,6 +96,8 @@ class GameStatesHandler:
                 self._bootstrap_gameplay_state()
         elif self.state_name == "MENU":
             self._bootstrap_menu_state()
+        elif self.state_name == "GAME_OVER":
+            self._bootstrap_game_over_state()
 
     def update(self, dt: int)-> None:
         """This function updates.."""
