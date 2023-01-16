@@ -4,16 +4,17 @@ import random
 import extra_files.game_constants as game_constants
 
 from cls.paddle import Paddle
-from typing import Optional
+from typing import Optional, Final
 
 class Ball:
-    def __init__(self, x: float, y: float, radius: float = game_constants.BALL_RADIUS)-> None:
+    _radius: Final[int] = game_constants.BALL_RADIUS
+
+    def __init__(self, x: float, y: float)-> None:
         """__init__ constructor"""
         self.x = self.original_x = x
         self.y = self.original_y = y
         self.angle = self._get_random_angle(-30, 30, [0])
         self.pos = 1 if random.random() < 0.5 else -1
-        self.radius = radius
         self.max_vel = game_constants.BALL_MAX_VEL
         self.x_vel = self.pos * abs(math.cos(self.angle) * self.max_vel)
         self.y_vel = math.sin(self.angle) * self.max_vel
@@ -21,7 +22,7 @@ class Ball:
 
     def __repr__(self)-> str:
         """__repr__ constructor"""
-        return f"Ball(x: {self.x}, y: {self.y}, radius: {self.radius}, x_vel: {self.x_vel}, y_vel: {self.y_vel}, color: {self.color})"
+        return f"Ball(x: {self.x}, y: {self.y}, radius: {self._radius}, x_vel: {self.x_vel}, y_vel: {self.y_vel}, color: {self.color})"
         
     def __str__(self)-> None:
         """__str__ constructor"""
@@ -50,7 +51,7 @@ class Ball:
 
     def draw(self, window: pygame.Surface)-> None:
         """This method draws the ball on the pygame.surface"""
-        pygame.draw.circle(window, self.color, (self.x, self.y), self.radius)
+        pygame.draw.circle(window, self.color, (self.x, self.y), self._radius)
 
     def move(self)-> None:
         """This method handles the movement of the ball updating it's position along the time"""
@@ -63,13 +64,13 @@ class Ball:
             self._set_revertion_vel(y_direction=True)
         elif kwargs.get('left_paddle_collision', False):
             if self.y >= paddle.y and self.y <= paddle.y + paddle.height:
-                if self.x - self.radius <= paddle.x + paddle.width: # left paddle hit
+                if self.x - self._radius <= paddle.x + paddle.width: # left paddle hit
                     paddle._increase_number_of_touches()
                     self._set_revertion_vel(x_direction = True)
                     self._set_y_vel_after_paddle_collision(paddle)
         elif kwargs.get('right_paddle_collision', False):
             if self.y >= paddle.y and self.y <= paddle.y + paddle.height: 
-                if self.x + self.radius >= paddle.x: # right paddle hit
+                if self.x + self._radius >= paddle.x: # right paddle hit
                     paddle._increase_number_of_touches()
                     self._set_revertion_vel(x_direction = True)
                     self._set_y_vel_after_paddle_collision(paddle)
