@@ -120,11 +120,11 @@ class GamePause(BaseState):
         right_score_text = score_font.render('{}'.format(right_player_score), True, game_constants.WHITE)
     
         surface.blit(left_score_text,
-                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (ball.radius) - 2 * 15,
+                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (ball._radius) - 2 * 15,
                     (self.window_height / 2) - (left_score_text.get_height() / 2))
                     )
         surface.blit(right_score_text,
-                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (ball.radius) + 15,
+                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (ball._radius) + 15,
                     (self.window_height / 2) - (right_score_text.get_height() / 2))
                     )
 
