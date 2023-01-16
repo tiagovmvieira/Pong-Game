@@ -3,11 +3,16 @@ import os
 import extra_files.game_constants as game_constants
 
 from .base import BaseState
+from cls.button import Button
 from typing import Final
 
 
 class GameOver(BaseState):
+    pygame.init()
     _time_active_threshold: Final[int] = game_constants.GAME_OVER_ACTIVE_THRESHOLD
+    play_again_button: None = None
+    quit_game_button: None = None
+    state_font: pygame.font = pygame.font.Font(os.path.join(BaseState.assets_dir, os.listdir(BaseState.assets_dir)[0]), 20)
 
     def __init__(self)-> None:
         """__init__ constructor"""
@@ -15,15 +20,16 @@ class GameOver(BaseState):
         self.close_font = pygame.font.Font(os.path.join(self.assets_dir, os.listdir(self.assets_dir)[0]), 20)
 
         self.winner_message = self.close_font.render('{}'.format(self.persist.get("winner_message")), True, game_constants.WHITE)
-
-
-        self.revenge_message = self.close_font.render('{}'.format('Do you want to play again? (Y/N)'), True, game_constants.WHITE)
-        self.text_rect_revenge = self.revenge_message.get_rect()
-        self.text_rect_revenge.center = (self.window_width // 2 - self.revenge_message.get_width() // 2,
-                                        (self.window_height * 3 // 4 - self.revenge_message.get_height() // 2)
-                                        )
-
         self._time_active: Final[int] = 0
+
+    @classmethod
+    def get_state_font(cls)-> pygame.font:
+        return cls.state_font
+
+    @classmethod
+    def set_state_elements(cls, play_again_button: Button, quit_game_button: Button)-> None:
+        cls.play_again_button = play_again_button
+        cls.quit_game_button = quit_game_button
 
     def _reset_time_active(self)-> None:
         self._time_active = 0
@@ -34,7 +40,7 @@ class GameOver(BaseState):
                                                         game_constants.WHITE)
         self.text_rect_active = self.time_active_message.get_rect()
         self.text_rect_active.center = (self.window_width // 2 - self.time_active_message.get_width() // 2,
-                                    (self.window_height * 6 // 10 - self.time_active_message.get_height() // 2)
+                                    (self.window_height * 4 // 10 - self.time_active_message.get_height() // 2)
                                     )
 
     def _update_winner_message(self)-> None:
@@ -49,8 +55,7 @@ class GameOver(BaseState):
         self._update_winner_message()
         self._generate_time_active_message()
         if self._time_active >= self._time_active_threshold:
-            self.persist.clear()
-            self.quit = True
+            self._handle_action()
 
     def _handle_action(self, **kwargs)-> None:
         """This method handles the action to proceed in based on the fed kwargs from the get_event method"""
@@ -65,14 +70,16 @@ class GameOver(BaseState):
     def get_event(self, event: pygame.event.Event)-> None:
         if event.type == pygame.QUIT:
             self._handle_action()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_y:
-                self._handle_action(play_again=True)
-            elif event.key == pygame.K_n:
-                self._handle_action()
+        elif self.play_again_button.dynamic_elevation == 0 and not self.play_again_button.check_click():
+            self._handle_action(play_again=True)
+        elif self.quit_game_button.dynamic_elevation == 0 and not self.quit_game_button.check_click():
+            self._handle_action()
 
     def draw(self, surface: pygame.Surface)-> None:
         surface.fill(game_constants.PURE_BLACK)
         surface.blit(self.winner_message, self.text_rect_winner.center)
-        surface.blit(self.revenge_message, self.text_rect_revenge.center)
         surface.blit(self.time_active_message, self.text_rect_active.center)
+
+        if self.play_again_button and self.quit_game_button:
+            self.play_again_button.draw(surface)
+            self.quit_game_button.draw(surface)
