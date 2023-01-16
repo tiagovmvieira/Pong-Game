@@ -5,24 +5,24 @@ import pyfiglet
 import extra_files.game_constants as game_constants
 
 from termcolor import colored
-from typing import Final
+from typing import Union, Final
 
 from .base import BaseState
 from cls.paddle import Paddle
 from cls.ball import Ball
 
 class GamePlay(BaseState):
-    left_player_score: None = None
-    right_player_score: None = None
-    left_paddle: None = None
-    right_paddle: None = None
-    ball: None = None
+    left_player_score: Union[None, int] = None
+    right_player_score: Union[None, int] = None
+    left_paddle: Union[None, Paddle] = None
+    right_paddle: Union[None, Paddle] = None
+    ball: Union[None, Ball] = None
 
     def __init__(self)-> None:
         """__init__ constructor"""
         super().__init__()
 
-        self._winning_score = game_constants.WINNING_SCORE
+        self._winning_score: int = game_constants.WINNING_SCORE
         self.winner_message: str = ''
 
         self._left_player_color = game_constants.LEFT_PLAYER_COLOR
@@ -75,9 +75,9 @@ class GamePlay(BaseState):
     def handle_collision(self)-> None:
         """This method handles ball collisions with field horizontal boundaries and paddles"""
         # collision with the field horizontal boundaries
-        if self.ball.y + self.ball.radius >= self.window_height: #down (y)
+        if self.ball.y + self.ball._radius >= self.window_height: #down (y)
             self.ball.change_direction(down_boundary_collision=True)
-        elif (self.ball.y - self.ball.radius <= 0): #up (y)
+        elif (self.ball.y - self.ball._radius <= 0): #up (y)
             self.ball.change_direction(up_boundary_collision=True)
 
         # paddle collision:
@@ -148,11 +148,11 @@ class GamePlay(BaseState):
         right_score_text = self.score_font.render('{}'.format(self.right_player_score), True, game_constants.WHITE)
 
         surface.blit(left_score_text,
-                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (self.ball.radius) - 2 * 15,
+                    ((self.window_width / 2) - (left_score_text.get_width() / 2) - (self.ball._radius) - 2 * 15,
                     (self.window_height / 2) - (left_score_text.get_height() / 2))
                     )
         surface.blit(right_score_text,
-                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (self.ball.radius) + 15,
+                    ((self.window_width / 2) + (right_score_text.get_width() / 2) + (self.ball._radius) + 15,
                     (self.window_height / 2) - (right_score_text.get_height() / 2))
                     )
 
