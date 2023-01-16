@@ -9,7 +9,7 @@ class Menu(BaseState):
     pygame.init()
     start_game_button: None = None
     quit_game_button: None = None
-    menu_font: pygame.font = pygame.font.Font(os.path.join(BaseState.assets_dir, os.listdir(BaseState.assets_dir)[0]), 20)
+    state_font: pygame.font = pygame.font.Font(os.path.join(BaseState.assets_dir, os.listdir(BaseState.assets_dir)[0]), 20)
     
     def __init__(self)-> None:
         """__init__ constructor"""
@@ -18,14 +18,15 @@ class Menu(BaseState):
         self.next_state: str = "GAMEPLAY"
 
     @classmethod
-    def set_menu_elements(cls, start_game_button: Button, quit_game_button: Button)-> None:
-        """This class method allocates on the start_game_button, quit_game_button cls variables the corresponding Menu objects"""
-        cls.start_game_button = start_game_button
-        cls.quit_game_button = quit_game_button
+    def get_state_font(cls)-> pygame.font:
+        """This class method returns the state_font class variable"""
+        return cls.state_font
 
     @classmethod
-    def get_menu_font(cls)-> pygame.font:
-        return cls.menu_font
+    def set_state_elements(cls, start_game_button: Button, quit_game_button: Button)-> None:
+        """This class method allocates on the cls variables the corresponding objects"""
+        cls.start_game_button = start_game_button
+        cls.quit_game_button = quit_game_button
 
     def _render_text(self, index: int)-> pygame.Surface:
         """This method renders the text grabbed through the index on the options attribute and returns the Pygame Surface"""
