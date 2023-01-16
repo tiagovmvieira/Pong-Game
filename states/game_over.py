@@ -24,14 +24,17 @@ class GameOver(BaseState):
 
     @classmethod
     def get_state_font(cls)-> pygame.font:
+        """This class method returns the state_font class variable"""
         return cls.state_font
 
     @classmethod
     def set_state_elements(cls, play_again_button: Button, quit_game_button: Button)-> None:
+        """This class method allocates on class variables the corresponding objects"""
         cls.play_again_button = play_again_button
         cls.quit_game_button = quit_game_button
 
     def _reset_time_active(self)-> None:
+        """This method resets the time active instance variable"""
         self._time_active = 0
 
     def _generate_time_active_message(self)-> None:
@@ -44,6 +47,7 @@ class GameOver(BaseState):
                                     )
 
     def _update_winner_message(self)-> None:
+        """This method updates the winner message"""
         self.winner_message = self.close_font.render('{}'.format(self.persist.get("winner_message")), True, game_constants.WHITE)
         self.text_rect_winner = self.winner_message.get_rect()
         self.text_rect_winner.center = (self.window_width // 2 - self.winner_message.get_width() // 2,
