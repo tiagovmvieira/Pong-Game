@@ -29,7 +29,7 @@ class GamePlay(BaseState):
         self._right_player_color = game_constants.RIGHT_PLAYER_COLOR
 
     @classmethod
-    def set_game_elements(cls, left_paddle: Paddle, right_paddle: Paddle, ball: Ball)-> None:
+    def set_state_elements(cls, left_paddle: Paddle, right_paddle: Paddle, ball: Ball)-> None:
         """This class allocates on the left_paddle, right_paddle and ball cls variables the corresponding GameElements objects"""
         cls.left_paddle = left_paddle
         cls.right_paddle = right_paddle
