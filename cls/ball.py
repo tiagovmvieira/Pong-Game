@@ -4,32 +4,34 @@ import random
 import extra_files.game_constants as game_constants
 
 from cls.paddle import Paddle
-from typing import Optional, Final
+from typing import Optional, Final, List
 
 class Ball:
     _radius: Final[int] = game_constants.BALL_RADIUS
+    _color: Final[tuple] = game_constants.BALL_COLOR
+    _max_vel: Final[int] = game_constants.BALL_MAX_VEL
 
     def __init__(self, x: float, y: float)-> None:
         """__init__ constructor"""
         self.x = self.original_x = x
         self.y = self.original_y = y
+
         self.angle = self._get_random_angle(-30, 30, [0])
         self.pos = 1 if random.random() < 0.5 else -1
-        self.max_vel = game_constants.BALL_MAX_VEL
-        self.x_vel = self.pos * abs(math.cos(self.angle) * self.max_vel)
-        self.y_vel = math.sin(self.angle) * self.max_vel
-        self.color = game_constants.BALL_COLOR
+        self.x_vel = self.pos * abs(math.cos(self.angle) * self._max_vel)
+        self.y_vel = math.sin(self.angle) * self._max_vel
 
     def __repr__(self)-> str:
         """__repr__ constructor"""
-        return f"Ball(x: {self.x}, y: {self.y}, radius: {self._radius}, x_vel: {self.x_vel}, y_vel: {self.y_vel}, color: {self.color})"
+        return f"Ball(x: {self.x}, y: {self.y}, radius: {self._radius}, x_vel: {self.x_vel}, y_vel: {self.y_vel}, color: {self._color})"
         
     def __str__(self)-> None:
         """__str__ constructor"""
         return self.__repr__()
 
-    def _get_random_angle(self, min_angle: int, max_angle: int, excluded: list)-> float:
-        """This method returns the random angle used on the kick off stage"""
+    @staticmethod
+    def _get_random_angle(min_angle: int, max_angle: int, excluded: List[float])-> float:
+        """This method returns the random angle used on the kick off instant"""
         angle = 0
         while angle in excluded:
             angle = math.radians(random.randrange(min_angle, max_angle))
@@ -47,11 +49,11 @@ class Ball:
         """This method computes (based on the paddle's hitted position) and reverts the signal of the ball along the y_direction"""
         middle_y = paddle.y + paddle.height / 2
         difference_y = middle_y - self.y
-        self.y_vel = -1 * difference_y / (paddle.height / 2) * self.max_vel
+        self.y_vel = -1 * difference_y / (paddle.height / 2) * self._max_vel
 
     def draw(self, window: pygame.Surface)-> None:
         """This method draws the ball on the pygame.surface"""
-        pygame.draw.circle(window, self.color, (self.x, self.y), self._radius)
+        pygame.draw.circle(window, self._color, (self.x, self.y), self._radius)
 
     def move(self)-> None:
         """This method handles the movement of the ball updating it's position along the time"""
@@ -81,9 +83,8 @@ class Ball:
         self.y = self.original_y
 
         self.angle = self._get_random_angle(-30, 30, [0])
-        x_vel = abs(math.cos(self.angle) * self.max_vel)
-        y_vel = math.sin(self.angle) * self.max_vel
+        x_vel = abs(math.cos(self.angle) * self._max_vel)
+        y_vel = math.sin(self.angle) * self._max_vel
 
         self.y_vel = y_vel
         self.x_vel *= -1
-
