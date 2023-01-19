@@ -103,7 +103,7 @@ class GameStatesHandler:
             self._bootstrap_state(game_over=True)
 
     def update(self, dt: int)-> None:
-        """This function updates.."""
+        """This function orchestrates the flip_state method and handles the update logic on each state"""
         if self.state.quit:
             self.done = True
         elif self.state.done:
@@ -111,11 +111,11 @@ class GameStatesHandler:
         self.state.update(dt)
 
     def draw(self)-> None:
-        """This function draws.."""
+        """This function handles the drawing logic on each state"""
         self.state.draw(self.screen)
 
     def run(self)-> None:
-        """This function runs the game"""
+        """This function is the game main loop"""
         while not self.done:
             dt = self.clock.tick(self.fps * 2 if self.state_name == "SPLASH" else self.fps)
             self.event_loop()
