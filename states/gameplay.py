@@ -5,7 +5,7 @@ import pyfiglet
 import extra_files.game_constants as game_constants
 
 from termcolor import colored
-from typing import Union, Final
+from typing import Union, Final, List
 
 from .base import BaseState
 from cls.paddle import Paddle
@@ -36,10 +36,10 @@ class GamePlay(BaseState):
         cls.ball = ball
 
     @classmethod
-    def set_game_initial_score(cls, left_player_score: int, right_player_score: int)-> None:
+    def set_game_initial_score(cls, scores: List[int])-> None:
         """This class allocates on the left_player_score and right_player_score cls variables the corresponding GameInformation variables"""
-        cls.left_player_score = left_player_score
-        cls.right_player_score = right_player_score
+        cls.left_player_score = scores[0]
+        cls.right_player_score = scores[1]
 
     @classmethod
     def _set_player_score(cls, **kwargs)-> None:
