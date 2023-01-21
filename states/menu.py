@@ -5,6 +5,8 @@ from .base import BaseState
 from cls.button import Button
 import extra_files.game_constants as game_constants
 
+from typing import List
+
 class Menu(BaseState):
     pygame.init()
     start_game_button: None = None
@@ -23,10 +25,10 @@ class Menu(BaseState):
         return cls.state_font
 
     @classmethod
-    def set_state_elements(cls, start_game_button: Button, quit_game_button: Button)-> None:
+    def set_state_elements(cls, buttons: List[Button])-> None:
         """This class method allocates on the cls variables the corresponding objects"""
-        cls.start_game_button = start_game_button
-        cls.quit_game_button = quit_game_button
+        cls.start_game_button = buttons[0]
+        cls.quit_game_button = buttons[1]
 
     def _render_text(self, index: int)-> pygame.Surface:
         """This method renders the text grabbed through the index on the options attribute and returns the Pygame Surface"""
