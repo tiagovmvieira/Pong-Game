@@ -14,8 +14,7 @@ from typing import Final, List
 
 
 class GameInformation:
-    _left_player_score: Final[int] = 0
-    _right_player_score: Final[int] = 0
+    _scores : List[int] = [0, 0]
 
 
 class GameElements:
@@ -75,7 +74,7 @@ class GameStatesHandler:
         if kwargs.get("gameplay", False):
             self.state.set_state_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
             self.state.set_initial_positions()
-            self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
+            self.state.set_game_initial_score(GameInformation._scores)
         elif kwargs.get("menu", False):
             self.state.set_state_elements(MenuElements._buttons)
         elif kwargs.get("game_over", False):
