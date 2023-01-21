@@ -10,7 +10,7 @@ from states.base import BaseState
 from states.menu import Menu
 from states.game_over import GameOver
 
-from typing import Final
+from typing import Final, List
 
 
 class GameInformation:
@@ -27,10 +27,12 @@ class GameElements:
 
 class MenuElements:
     _state_font = Menu.get_state_font()
-    _start_game_button = Button('Start Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+    _buttons: List[Button] = [
+        Button('Start Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+                            _state_font),
+        Button('Quit Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
                             _state_font)
-    _quit_game_button = Button('Quit Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
-                            _state_font)
+    ]
 
 
 class GameOverElements:
@@ -75,7 +77,7 @@ class GameStatesHandler:
             self.state.set_initial_positions()
             self.state.set_game_initial_score(GameInformation._left_player_score, GameInformation._right_player_score)
         elif kwargs.get("menu", False):
-            self.state.set_state_elements(MenuElements._start_game_button, MenuElements._quit_game_button)
+            self.state.set_state_elements(MenuElements._buttons)
         elif kwargs.get("game_over", False):
             self.state.set_state_elements(GameOverElements._play_again_button, GameOverElements._quit_game_button,
                                         GameOverElements.launcher)
