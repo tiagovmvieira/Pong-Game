@@ -14,13 +14,15 @@ from typing import Final, List
 
 
 class GameInformation:
-    _scores : List[int] = [0, 0]
+    _scores: List[int] = [0, 0]
 
 
 class GameElements:
-    _left_paddle: Paddle = Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
-    _right_paddle: Paddle = Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
+    _paddles: List[Paddle] = [
+        Paddle(10, game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2),
+        Paddle(game_constants.WINDOW_WIDTH - 10 - game_constants.PADDLE_WIDTH,\
                                 game_constants.WINDOW_HEIGHT // 2 - game_constants.PADDLE_HEIGHT // 2)
+    ]
     _ball = Ball(game_constants.WINDOW_WIDTH // 2, game_constants.WINDOW_HEIGHT // 2)
 
 
@@ -36,11 +38,16 @@ class MenuElements:
 
 class GameOverElements:
     _state_font = GameOver.get_state_font()
-    launcher = Launcher(game_constants.WINDOW_WIDTH / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 3000)
-    _play_again_button = Button("Play Again", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+    _buttons: List[Button] = [
+        Button("Play Again", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
+                            _state_font),
+        Button("Quit Game", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
                             _state_font)
-    _quit_game_button = Button("Quit Game", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
-                            _state_font)
+    ]
+    _launchers: List[Launcher] = [
+        Launcher(game_constants.WINDOW_WIDTH / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 3000),
+        Launcher(game_constants.WINDOW_WIDTH * 4 / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 3000)
+    ]
 
 
 class GameStatesHandler:
@@ -53,7 +60,7 @@ class GameStatesHandler:
 
         self.done = False
         self.clock = pygame.time.Clock()
-        self.fps = game_constants.FPS
+        self.fps: Final[int] = game_constants.FPS
         self.state: BaseState = self.states.get(self.state_name, None)
 
     def event_loop(self)-> None:
@@ -72,15 +79,15 @@ class GameStatesHandler:
     def _bootstrap_state(self, **kwargs)-> None:
         """This method includes the state bootstrap logic according to the fed kwargs"""
         if kwargs.get("gameplay", False):
-            self.state.set_state_elements(GameElements._left_paddle, GameElements._right_paddle, GameElements._ball)
+            self.state.set_state_elements(GameElements._paddles, GameElements._ball)
             self.state.set_initial_positions()
             self.state.set_game_initial_score(GameInformation._scores)
         elif kwargs.get("menu", False):
             self.state.set_state_elements(MenuElements._buttons)
         elif kwargs.get("game_over", False):
-            self.state.set_state_elements(GameOverElements._play_again_button, GameOverElements._quit_game_button,
-                                        GameOverElements.launcher)
-            self.state.launcher.set_start_time()
+            self.state.set_state_elements(GameOverElements._buttons, GameOverElements._launchers)
+            for launcher in self.state.launchers:
+                launcher.reset_start_time()
 
     def flip_state(self)-> None:
         """This function flips the state assumed on the game"""
@@ -128,8 +135,9 @@ class GameStatesHandler:
                 self.state.score_handling()
                 self.state.winner_handling()
             elif self.state_name == "GAME_OVER":
-                self.state.launcher.loop(game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
-
+                for launcher in self.state.launchers:
+                    launcher.loop(game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
+            
             self.update(dt)
             self.draw()
             pygame.display.update()
