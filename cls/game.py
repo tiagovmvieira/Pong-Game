@@ -29,24 +29,20 @@ class GameElements:
 class MenuElements:
     _state_font = Menu.get_state_font()
     _buttons: List[Button] = [
-        Button('Start Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
-                            _state_font),
-        Button('Quit Game', game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
-                            _state_font)
+        Button('Start Game', (250, 250), _state_font),
+        Button('Quit Game', (250, 350), _state_font)
     ]
 
 
 class GameOverElements:
     _state_font = GameOver.get_state_font()
     _buttons: List[Button] = [
-        Button("Play Again", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 250), 6,
-                            _state_font),
-        Button("Quit Game", game_constants.COVER_BUTTON_WIDTH, game_constants.COVER_BUTTON_HEIGHT, (250, 350), 6,
-                            _state_font)
+        Button("Play Again", (250, 250), _state_font),
+        Button("Quit Game", (250, 350), _state_font)
     ]
     _launchers: List[Launcher] = [
         Launcher(game_constants.WINDOW_WIDTH / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 3000),
-        Launcher(game_constants.WINDOW_WIDTH * 4 / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 3000)
+        Launcher(game_constants.WINDOW_WIDTH * 4 / 5, game_constants.WINDOW_HEIGHT - game_constants.LAUNCHER_HEIGHT, 2000)
     ]
 
 
@@ -113,6 +109,7 @@ class GameStatesHandler:
     def update(self, dt: int)-> None:
         """This function orchestrates the flip_state method and handles the update logic on each state"""
         if self.state.quit:
+            # meter sys.quit aqui ver Clear Codes
             self.done = True
         elif self.state.done:
             self.flip_state()
@@ -136,7 +133,7 @@ class GameStatesHandler:
                 self.state.winner_handling()
             elif self.state_name == "GAME_OVER":
                 for launcher in self.state.launchers:
-                    launcher.loop(game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
+                    launcher.loop(self.screen, game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
             
             self.update(dt)
             self.draw()
