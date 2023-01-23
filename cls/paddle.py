@@ -1,13 +1,13 @@
 import pygame
 import extra_files.game_constants as game_constants
 
-from typing import Tuple
+from typing import Final
 
 class Paddle:
-    width: int = game_constants.PADDLE_WIDTH
-    height: int = game_constants.PADDLE_HEIGHT
-    _vel: int = game_constants.PADDLE_VEL
-    _colors: tuple = game_constants.PADDLE_COLORS
+    width: Final[int] = game_constants.PADDLE_WIDTH
+    height: Final[int] = game_constants.PADDLE_HEIGHT
+    _vel: Final[int] = game_constants.PADDLE_VEL
+    _colors: Final[tuple] = game_constants.PADDLE_COLORS
 
     def __init__(self, x: int, y: int):
         """__init__ constructor"""
@@ -16,7 +16,7 @@ class Paddle:
 
         self.touches: int = 0
 
-    def __repr__(self)-> None:
+    def __repr__(self)-> str:
         """__repr__ constructor"""
         return f"Paddle(x: {self.x}, y: {self.y}, width: {self.width}, height: {self.height}, vel: {self._vel}, colors: {self._colors})"
 
