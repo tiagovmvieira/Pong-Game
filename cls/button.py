@@ -1,23 +1,28 @@
 import pygame
-from pygame.locals import *
 import extra_files.game_constants as game_constants
 
+from pygame.locals import *
+from typing import Final
+
+
 class Button:
-    def __init__(self, text: str, width: int, height: int, pos: tuple, elevation: int, font: pygame.font)-> None:
+    _width: Final[int] = game_constants.BUTTON_WIDTH
+    _height: Final[int] = game_constants.BUTTON_HEIGHT
+    _elevation: Final[int] = game_constants.BUTTON_ELEVATION
+    def __init__(self, text: str, pos: tuple, font: pygame.font)-> None:
         """__init__ constructor"""
 
         # Core attributes
         self.pressed = False
-        self.elevation = elevation
-        self.dynamic_elevation = elevation
+        self.dynamic_elevation = self._elevation
         self.original_y_pos = pos[1]
 
         # top rectangle
-        self.top_rectangle = pygame.Rect((pos), (width, height))
+        self.top_rectangle = pygame.Rect((pos), (self._width, self._height))
         self.top_rectangle_color = '#475F77'
 
         # bottom rectangle
-        self.bottom_rectangle = pygame.Rect((pos), (width, elevation))
+        self.bottom_rectangle = pygame.Rect((pos), (self._width, self._elevation))
         self.bottom_rectangle_color = "#354B5E"
 
         # text
@@ -48,13 +53,13 @@ class Button:
                 self.dynamic_elevation = 0
                 self.pressed = True
             else:
-                self.dynamic_elevation = self.elevation
+                self.dynamic_elevation = self._elevation
                 if self.pressed == True:
                     self.pressed = False
                     pygame.time.wait(130)
                 return self.pressed
         else:
-            self.dynamic_elevation = self.elevation
+            self.dynamic_elevation = self._elevation
             self.top_rectangle_color = "#475F77"
 
         return self.pressed
