@@ -28,10 +28,10 @@ class Launcher:
         """__str__ constructor"""
         return self.__repr__()
 
-    def update(self, surface: pygame.Surface, max_width: int, max_height: int)-> None:
+    def update(self, surface: pygame.Surface)-> None:
         """This method handles the fireworks' dynamic since its called every frame"""
         for firework in self.fireworks:
-            firework.update(surface, max_width, max_height)
+            firework.update(surface)
             if firework.remove():
                 self.fireworks.remove(firework)
 
@@ -64,4 +64,4 @@ class Launcher:
             self.reset_start_time(current_time=current_time)
             self.launch()
 
-        self.update(surface, game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
+        self.update(surface)
