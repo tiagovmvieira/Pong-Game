@@ -1,5 +1,4 @@
 import pygame
-import math
 
 import extra_files.game_constants as game_constants
 
@@ -17,7 +16,7 @@ class Firework:
     max_speed: Final[int] = game_constants.FIREWORK_SPEED_MAX
     gravity_force: pygame.math.Vector2 = pygame.math.Vector2(0, 0.3)
 
-    def __init__(self, x: int, y: int, explode_height: int):    
+    def __init__(self, x: int, y: int, explode_height: int)-> None:    
         """__init__ constructor"""
         self.pos = pygame.math.Vector2(x, y)
         self.explode_height = explode_height
@@ -38,8 +37,8 @@ class Firework:
         """__str__ constructor"""
         return self.__repr__()
 
-    def update(self, surface: pygame.Surface, max_width: int, max_height: int)-> None:
-        """This method xxxx"""
+    def update(self, surface: pygame.Surface)-> None:
+        """This method handles the particle dynamic since it is called every frame"""
         if not self.exploded:
             self.firework.apply_force(self.gravity_force)
             self.firework.move(explode_height=self.explode_height)
