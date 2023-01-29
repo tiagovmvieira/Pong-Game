@@ -1,72 +1,82 @@
 import pygame
-import random
 import math
 
 import extra_files.game_constants as game_constants
 
 from .projectile import Projectile
-from typing import Final
+from typing import Final, Union, List
+from random import randint, choice
+
 
 class Firework:
-    _radius : Final[int] = game_constants.FIREWORK_RADIUS
+    radius : Final[int] = game_constants.FIREWORK_RADIUS
     _projectile_vel: Final[int] = game_constants.PROJECTILE_VEL
     _max_projectiles: Final[int] = game_constants.FIREWORK_MAX_PROJECTILES
     _min_projectiles: Final[int] = game_constants.FIREWORK_MIN_PROJECTILES
+    min_speed: Final[int] = game_constants.FIREWORK_SPEED_MIN
+    max_speed: Final[int] = game_constants.FIREWORK_SPEED_MAX
+    gravity_force: pygame.math.Vector2 = pygame.math.Vector2(0, 0.3)
 
-    def __init__(self, x: int, y: int, y_vel: int, explode_height: int, color: tuple)-> None:
+    def __init__(self, x: int, y: int, explode_height: int):    
         """__init__ constructor"""
-        self.x = x
-        self.y = y
-        self.y_vel = y_vel
+        self.pos = pygame.math.Vector2(x, y)
         self.explode_height = explode_height
-        self.color = color
 
-        self.projectiles: list = []
+        self.color = tuple(randint(0, 255) for i in range(3))
+        self.colors = tuple(tuple(randint(0, 255) for i in range(3)) for j in range(3))
+
+        self.firework: Projectile = Projectile(self.pos.x, self.pos.y, True, self.color)
+
+        self.projectiles: Union[None, List[Projectile]] = None
         self.exploded: bool = False
 
+    def __repr__(self)-> str:
+        """__repr__ constructor"""
+        return f"Firework(exploded: {self.exploded}, projectiles: {self.projectiles}, explode_height: {self.explode_height})"
+
+    def __str__(self)-> None:
+        """__str__ constructor"""
+        return self.__repr__()
+
+    def update(self, surface: pygame.Surface, max_width: int, max_height: int)-> None:
+        """This method xxxx"""
+        if not self.exploded:
+            self.firework.apply_force(self.gravity_force)
+            self.firework.move(explode_height=self.explode_height)
+            self.draw(surface)
+            if self.firework.vel.y >= 0:
+                self.explode()
+        else:
+            for projectile in self.projectiles:
+                projectile.update()
+                projectile.draw(surface)
+
     def explode(self)-> None:
-        """This method sets the instance variable exploded to True"""
+        """This method sets the instance variable exploded to True and populates the 
+            projectiles list based on the projectiles amount computed"""
         self.exploded = True
-        number_of_projectiles = random.randrange(
+        number_of_projectiles = randint(
             self._min_projectiles,
             self._max_projectiles
         )
 
-        self.create_circular_projectiles(number_of_projectiles)
+        self.projectiles = [Projectile(self.firework.pos.x, self.firework.pos.y,
+                                    False, choice(self.colors)) for _ in range(number_of_projectiles)]
 
-    def create_circular_projectiles(self, number_of_projectiles: int):
-        """This method creates a circular pattern to launch the projectiles"""
-        angle_difference = math.pi * 2 / number_of_projectiles
-        current_angle = 0
-        velocity = random.randrange(self._projectile_vel - 1,
-                                    self._projectile_vel + 1)
-        for i in range(number_of_projectiles):
-            x_vel = math.sin(current_angle) * velocity
-            y_vel = math.cos(current_angle) * velocity
-            color = "#354B5E"
-            self.projectiles.append(Projectile(self.x, self.y, x_vel, y_vel, color))
-            current_angle += angle_difference
-
-    def move(self, max_width: int, max_height: int)-> None:
-        """This method handles the movement of the firework object"""
+    def remove(self)-> bool:
         if not self.exploded:
-            self.y -= self.y_vel # y position of the firework will be decreasing or increasing until it reaches the explode height
-            if self.y <= self.explode_height:
-                self.explode()
+            return False
 
-        projectiles_to_remove = []
         for projectile in self.projectiles:
-            projectile.move()
+            if projectile.remove:
+                self.projectiles.remove(projectile)
 
-            if projectile.x >= max_width or projectile.x < 0:
-                projectiles_to_remove.append(projectile)
-            elif projectile.y >= max_height or projectile.y < 0:
-                projectiles_to_remove.append(projectile)
+        # remove the firework object if all projectiles were removed
+        return len(self.projectiles) == 0
 
-        for projectile in projectiles_to_remove:
-            self.projectiles.remove(projectile)
-    
     def draw(self, surface: pygame.Surface)-> None:
         """This method draws the firework on the pygame.surface"""
-        if not self.exploded:
-            pygame.draw.circle(surface, self.color, (self.x, self.y), self._radius)
+        x_pos = int(self.firework.pos.x) # grab the x_pos from the 2D vector
+        y_pos = int(self.firework.pos.y) # grab the y_pos from the 2D vector
+
+        pygame.draw.circle(surface, self.color, (x_pos, y_pos), self.firework.radius)
