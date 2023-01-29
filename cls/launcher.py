@@ -28,11 +28,14 @@ class Launcher:
         """__str__ constructor"""
         return self.__repr__()
 
-    def update(self, surface: pygame.Surface):
+    def update(self, surface: pygame.Surface, max_width: int, max_height: int)-> None:
+        """This method handles the fireworks' dynamic since its called every frame"""
         for firework in self.fireworks:
-            firework.update(surface)
+            firework.update(surface, max_width, max_height)
             if firework.remove():
                 self.fireworks.remove(firework)
+
+        pygame.display.update()
 
     def reset_start_time(self, current_time: Union[float, None] = None)-> None:
         """This method resets the _start_time instance variable according to a time value"""
@@ -52,8 +55,8 @@ class Launcher:
         firework = Firework(self.x + (self._width / 2), self.y, random.randrange(50, 400))
         self.fireworks.append(firework)
 
-    def loop(self, surface: pygame.Surface, max_width: int, max_height: int)-> None:
-        """This method creates a loop that is responsible for launching the firework and moving the firework"""
+    def loop(self, surface: pygame.Surface)-> None:
+        """This method creates a loop that is responsible for launching the firework and calling the update method"""
         current_time: float = time.time()
         time_elapsed: float = current_time - self._start_time
 
@@ -61,9 +64,4 @@ class Launcher:
             self.reset_start_time(current_time=current_time)
             self.launch()
 
-        for firework in self.fireworks:
-            firework.update(surface, max_width, max_height)
-            if firework.remove():
-                self.fireworks.remove(firework)
-
-        pygame.display.update()
+        self.update(surface, game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
