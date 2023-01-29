@@ -47,6 +47,8 @@ class GameOverElements:
 
 
 class GameStatesHandler:
+    _fps: Final[int] = game_constants.FPS
+
     def __init__(self, screen: pygame.Surface, states: dict, start_state: str)-> None:
         """__init__ constructor"""
         self.screen = screen
@@ -56,7 +58,6 @@ class GameStatesHandler:
 
         self.done = False
         self.clock = pygame.time.Clock()
-        self.fps: Final[int] = game_constants.FPS
         self.state: BaseState = self.states.get(self.state_name, None)
 
     def event_loop(self)-> None:
@@ -109,7 +110,6 @@ class GameStatesHandler:
     def update(self, dt: int)-> None:
         """This function orchestrates the flip_state method and handles the update logic on each state"""
         if self.state.quit:
-            # meter sys.quit aqui ver Clear Codes
             self.done = True
         elif self.state.done:
             self.flip_state()
@@ -122,7 +122,7 @@ class GameStatesHandler:
     def run(self)-> None:
         """This function is the game main loop"""
         while not self.done:
-            dt = self.clock.tick(self.fps * 2 if self.state_name == "SPLASH" else self.fps)
+            dt = self.clock.tick(self._fps * 2 if self.state_name == "SPLASH" else self._fps)
             self.event_loop()
 
             if self.state_name == "GAMEPLAY":
@@ -133,7 +133,7 @@ class GameStatesHandler:
                 self.state.winner_handling()
             elif self.state_name == "GAME_OVER":
                 for launcher in self.state.launchers:
-                    launcher.loop(self.screen, game_constants.WINDOW_WIDTH, game_constants.WINDOW_HEIGHT)
+                    launcher.loop(self.screen)
             
             self.update(dt)
             self.draw()
